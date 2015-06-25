@@ -1,24 +1,9 @@
-import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
-import java.io.File;
-import java.io.IOException;
-
 public class King extends Piece {
     public King(int color) {
-        this.color = color;
-        symbol = "K";
-        name = "King";
-        String ext = ".png";
-        icons = new BufferedImage[2];
-        try {
-            icons[0] = ImageIO.read(new File("White"+name+ext));
-            icons[1] = ImageIO.read(new File("Black"+name+ext));
-        } catch (IOException e) {
-            System.out.println("Error: could not find icons for "+name);
-        }
+        super("King", "K", color);
     }
 
-    public King (int color, String location) {
+    public King(int color, String location) {
         this(color);
         setLocation(location);
     }
@@ -38,6 +23,9 @@ public class King extends Piece {
                     out[i][j] = false;
                 } else {
                     out[i][j] = true;
+                }
+                if (board[i][j] != null && board[i][j].color == color) {
+                    out[i][j] = false;
                 }
             }
         }
