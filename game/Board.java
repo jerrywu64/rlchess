@@ -1,14 +1,17 @@
+//Standard chessboard.
 public class Board {
     // Board orientation:
     // (0, 0) is bottom left
     // first coordinate is rank, second is file
     // so relative to arrays, the board is upside-down
     public Piece[][] board;
+    public int turn; // corresponds to color
 
     
     public Board() {
         board = new Piece[8][8];
         resetBoard();
+        turn = 0;
         
 
 
@@ -44,7 +47,50 @@ public class Board {
         place(1, "Rook", "h8");
     }
         
-        
+    // Returns true if the move was valid (and executed)
+    // and false if invalid.
+    private boolean move(Piece piece, String dest) {
+        int[] destarr = convFromNot(dest);
+        if (!piece.getMoves(board)[destarr[0]][destarr[1]]) return false;
+        if (board[destarr[0]][destarr[1]] == null) {
+            board[destarr[0]][destarr[1]] = piece;
+            board[piece.rank][piece.file] = null;
+            piece.setLocation(dest);
+            turn = (turn + 1) % 2;
+        } else {
+            capture(piece, board[destarr[0]][destarr[1]]);
+        }
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+                if (board[i][j] != null && board[i][j] != piece) 
+                    board[i][j].setLocation(i, j);
+            }
+        }
+        return true;
+    }
+
+    // Same return behavior.
+    public boolean move(String from, String to) {
+        int[] fromarr = convFromNot(from);
+        if (board[fromarr[0]][fromarr[1]] == null) {
+            return false;
+        }
+        Piece piece = board[fromarr[0]][fromarr[1]];
+        if (piece.color != turn) {
+            return false;
+        }
+        return move(piece, to);
+    }   
+
+    // Uses the given peice to capture the target piece.
+    private void capture(Piece piece, Piece targ) {
+        board[piece.rank][piece.file] = null;
+        board[targ.rank][targ.file] = piece;
+        piece.setLocation(targ.rank, targ.file);
+        targ.setLocation(-1, -1);
+        turn = (turn + 1) % 2;
+
+    }
 
     public static int[] convFromNot(String loc) {
         int[] out = new int[2];

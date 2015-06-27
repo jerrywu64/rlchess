@@ -41,15 +41,19 @@ public class Pawn extends Piece {
                 board[rank + inc][file - 1].color != color);
 
         // yay doublemoving
-        if ((color == 0 && rank == 2) || (color == 1 && rank == 7)) 
+        if ((color == 0 && rank == 1) || (color == 1 && rank == 6)) 
             out[rank + 2 * inc][file] = out[rank + inc][file] && 
                 board[rank + inc][file] == null;
 
         // yay en passant
-        if ((color == 0 && rank == 5) || (color == 1 && rank == 4)) {
+        if ((color == 0 && rank == 4) || (color == 1 && rank == 3)) {
             if (file > 0 && board[rank][file - 1] != null && board[rank][file - 1].name.equals("Pawn")) {
                out[rank + inc][file - 1] = ((Pawn) board[rank][file - 1]).doublemoved;
             }
+            if (file < board[0].length - 1 && board[rank][file + 1] != null && board[rank][file + 1].name.equals("Pawn")) {
+               out[rank + inc][file + 1] = ((Pawn) board[rank][file + 1]).doublemoved;
+            }
+
         }
 
 
