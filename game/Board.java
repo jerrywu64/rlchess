@@ -53,10 +53,17 @@ public class Board {
         int[] destarr = convFromNot(dest);
         if (!piece.getMoves(board)[destarr[0]][destarr[1]]) return false;
         if (board[destarr[0]][destarr[1]] == null) {
-            board[destarr[0]][destarr[1]] = piece;
-            board[piece.rank][piece.file] = null;
-            piece.setLocation(dest);
-            turn = (turn + 1) % 2;
+            // System.out.println("Moving.");
+            if (piece.name.equals("Pawn") && piece.file != destarr[1]) {
+                // En Passant
+                // System.out.println("EP!");
+                capture(piece, board[piece.rank][destarr[1]]);
+            } else {
+                board[destarr[0]][destarr[1]] = piece;
+                board[piece.rank][piece.file] = null;
+                piece.setLocation(dest);
+                turn = (turn + 1) % 2;
+            }
         } else {
             capture(piece, board[destarr[0]][destarr[1]]);
         }
@@ -85,8 +92,17 @@ public class Board {
     // Uses the given peice to capture the target piece.
     private void capture(Piece piece, Piece targ) {
         board[piece.rank][piece.file] = null;
-        board[targ.rank][targ.file] = piece;
-        piece.setLocation(targ.rank, targ.file);
+        if (piece.name.equals("Pawn") && piece.rank == targ.rank) {
+            int newrank = targ.rank + 1 - 2 * piece.color;
+            board[newrank][targ.file] = piece;
+            board[targ.rank][targ.file] = null;
+            piece.setLocation(newrank, targ.file);
+            
+
+        } else {
+            board[targ.rank][targ.file] = piece;
+            piece.setLocation(targ.rank, targ.file);
+        }
         targ.setLocation(-1, -1);
         turn = (turn + 1) % 2;
 

@@ -23,7 +23,6 @@ public class Pawn extends Piece {
     }
 
 
-    // Todo
     public boolean[][] getMoves(Piece[][] board) {
         boolean[][] out = new boolean[board.length][board[0].length];
         int inc = 1 - 2 * color;

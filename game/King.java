@@ -16,7 +16,7 @@ public class King extends Piece {
     public boolean[][] getMoves(Piece[][] board) {
         boolean[][] out = new boolean[board.length][board[0].length];
         for (int i = 0; i < out.length; i++) {
-            for (int j = 0; j < out[0].length; i++) {
+            for (int j = 0; j < out[0].length; j++) {
                 if (Math.abs(j - file) > 1 || Math.abs(i - rank) > 1) {
                     out[i][j] = false;
                 } else if (j == file && i == rank) {
