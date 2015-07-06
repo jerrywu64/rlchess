@@ -1,7 +1,7 @@
 import java.util.Scanner;
 // Standard chess game.
 public class Game {
-    //TODO: fix pawn's EP (should capture the pawn)
+    //TODO: promotion, check+checkmate detection, castling
     
     public Board board;
 
@@ -61,6 +61,8 @@ public class Game {
                     continue;
                 }
             }
+            checkPromotions();
+
         }
             
 
@@ -94,6 +96,64 @@ public class Game {
             System.out.println();
         }
 
+    }
+
+    public void checkPromotions() {
+        for (int i = 0; i < board.board[0].length; i++) {
+            if (board.board[0][i] != null && board.board[0][i].name.equals("Pawn")) promote(0, i);
+            if (board.board[7][i] != null && board.board[7][i].name.equals("Pawn")) promote(7, i);
+        }
+    }
+    public void promote(int rank, int file) {
+        System.out.println("Choose piece to promote to.");
+        int c = board.board[rank][file].color;
+        Scanner sc = new Scanner(System.in);
+        String cin = sc.nextLine();
+        Piece piece = Piece.getPiece(c, cin, rank, file);
+        while (piece == null || piece.symbol.equals("K") || piece.symbol.equals("P")) {
+            if (piece == null) {
+                System.out.println("Invalid input.");
+            } else {
+                System.out.println("Can't promote to that.");
+            }
+            cin = sc.nextLine();
+            piece = Piece.getPiece(c, cin, rank, file);
+        }
+        board.board[rank][file] = piece;
+    }
+
+    public int[] findKing(int c) { // Finds a king of the given color
+        // or returns null if none exists.
+        for (int i = 0; i < board.board.length; i++) {
+            for (int j = 0; j < board.board[i].length; j++) {
+                if (board.board[i][j] != null && 
+                        board.board[i][j].symbol.equals("K") && 
+                        board.board[i][j].color == c) {
+                    int[] out = new int[2];
+                    out[0] = i;
+                    out[1] = j;
+                    return out;
+                }
+            }
+        }
+        return null;
+    }
+
+    public boolean checkCheck(int c) { // returns whether the king
+        // of the specifie color is in check. Returns false if no
+        // such king exists. Returns this for the bottom (and then left)
+        // king if multiple kings exit.
+        int[] loc = findKing(c);
+        for (int i = 0; i < board.board.length; i++) {
+            for (int j = 0; j < board.board[i].length; j++) {
+                if (board.board[i][j] == null || 
+                        board.board[i][j].color == c) 
+                    continue;
+                Piece p = board.board[i][j];
+                if (p.getMoves(board.board)[loc[0]][loc[1]]) return true;
+            }
+        }
+        return false;
     }
 
 

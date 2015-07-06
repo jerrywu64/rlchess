@@ -76,25 +76,25 @@ public abstract class Piece {
 
     // Piece Factories
     public static Piece getPiece(int color, String name) {
-        if (name.equals("King")) return new King(color);
-        if (name.equals("Queen")) return new Queen(color);
-        if (name.equals("Rook")) return new Rook(color);
-        if (name.equals("Bishop")) return new Bishop(color);
-        if (name.equals("Knight")) return new Knight(color);
-        if (name.equals("Pawn")) return new Pawn(color);
-        System.out.println("Tried to generate invalid piece "+name);
+        name = name.toLowerCase();
+        if (name.equals("king") || name.equals("j")) return new King(color);
+        if (name.equals("queen") || name.equals("q")) return new Queen(color);
+        if (name.equals("rook") || name.equals("r")) return new Rook(color);
+        if (name.equals("bishop") || name.equals("b")) return new Bishop(color);
+        if (name.equals("knight") || name.equals("n")) return new Knight(color);
+        if (name.equals("pawn") || name.equals("p")) return new Pawn(color);
         return null;
     }
 
     public static Piece getPiece(int color, String name, String loc) {
         Piece out = getPiece(color, name);
-        out.setLocation(loc);
+        if (out != null) out.setLocation(loc);
         return out;
     }
 
     public static Piece getPiece(int color, String name, int r, int c) {
         Piece out = getPiece(color, name);
-        out.setLocation(r, c);
+        if (out != null) out.setLocation(r, c);
         return out;
     }
 
