@@ -14,6 +14,7 @@ public abstract class Piece {
     public int file; // 0 through 7 converts to a through h
     public int prrank; // previous rank, mostly for en passant
     public int prfile; // previous file
+    public boolean moved; // for castling
 
     // Returns a boolean array of whether the target square is a possible
     // move destination.
@@ -48,6 +49,7 @@ public abstract class Piece {
     }
 
     public void setLocation(int r, int f) {
+        moved = rank != -1 && (moved || rank != r || file != f);
         prrank = rank;
         prfile = file;
         rank = r;
@@ -64,6 +66,7 @@ public abstract class Piece {
         file = -1;
         prrank = -1;
         prfile = -1;
+        moved = false;
 
         /* don't have images yet
         try {

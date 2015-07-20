@@ -51,7 +51,7 @@ public class Board {
     // and false if invalid.
     private boolean move(Piece piece, String dest) {
         int[] destarr = convFromNot(dest);
-        if (!piece.getMoves(board)[destarr[0]][destarr[1]]) return false;
+        if (!piece.getMoves(board)[destarr[0]][destarr[1]]) return false; // invalid move attempt
         if (board[destarr[0]][destarr[1]] == null) {
             // System.out.println("Moving.");
             if (piece.name.equals("Pawn") && piece.file != destarr[1]) {
@@ -59,6 +59,18 @@ public class Board {
                 // System.out.println("EP!");
                 capture(piece, board[piece.rank][destarr[1]]);
             } else {
+                if (piece.symbol.equals("K") && Math.abs(piece.file - destarr[1]) == 2) {
+                    // Castling, move the rook
+                    if (piece.file < destarr[1]) { // Kingside
+                        board[piece.rank][5] = board[piece.rank][7];
+                        board[piece.rank][7] = null;
+                        board[piece.rank][5].setLocation(piece.rank, 5);
+                    } else { // Queenside
+                        board[piece.rank][3] = board[piece.rank][0];
+                        board[piece.rank][0] = null;
+                        board[piece.rank][3].setLocation(piece.rank, 3);
+                    }
+                } 
                 board[destarr[0]][destarr[1]] = piece;
                 board[piece.rank][piece.file] = null;
                 piece.setLocation(dest);
@@ -122,7 +134,7 @@ public class Board {
 
     public static String convToNot(int r, int c) {
         if (r < 0 || c < 0) return null;
-        return "" + ((char) c + 'a') + (r + 1);
+        return "" + ((char) (c + 'a')) + (r + 1);
     }
 
     public void place(int color, String name, int r, int c) {
