@@ -1,3 +1,5 @@
+package game;
+
 public class Queen extends Piece {
     public Queen(int color) {
         super("Queen", "Q", color);

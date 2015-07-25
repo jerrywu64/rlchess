@@ -1,3 +1,5 @@
+package game;
+
 //Standard chessboard.
 public class Board {
     // Board orientation:
@@ -100,6 +102,18 @@ public class Board {
         }
         return move(piece, to);
     }   
+
+    public boolean move(int fromrank, int fromfile, int torank, int tofile) {
+        if (board[fromrank][fromfile] == null) {
+            return false;
+        }
+        Piece piece = board[fromrank][fromfile];
+        if (piece.color != turn) {
+            return false;
+        }
+        return move(piece, convToNot(torank, tofile));
+    }
+        
 
     // Uses the given peice to capture the target piece.
     private void capture(Piece piece, Piece targ) {

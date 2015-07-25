@@ -1,3 +1,5 @@
+package game;
+
 public class Pawn extends Piece {
     public boolean doublemoved;
     public Pawn(int color) {

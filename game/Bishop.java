@@ -1,3 +1,5 @@
+package game;
+
 public class Bishop extends Piece {
     public Bishop(int color) {
         super("Bishop", "B", color);
