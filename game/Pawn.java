@@ -1,7 +1,7 @@
 package game;
 
 public class Pawn extends Piece {
-    public boolean doublemoved;
+    private boolean doublemoved;
     public Pawn(int color) {
         super("Pawn", "P", color);
     }
@@ -16,12 +16,14 @@ public class Pawn extends Piece {
         setLocation(rank, file);
     }
     public void setLocation(String loc) {
+        int currank = rank;
         super.setLocation(loc);
-        doublemoved = (rank - prrank == 2 - 4 * color);
+        doublemoved = (rank - currank == 2 - 4 * color);
     }
     public void setLocation(int r, int f) {
+        int currank = rank;
         super.setLocation(r, f);
-        doublemoved = (rank - prrank == 2 - 4 * color);
+        doublemoved = (rank - currank == 2 - 4 * color);
     }
 
 
@@ -48,17 +50,18 @@ public class Pawn extends Piece {
 
         // yay en passant
         if ((color == 0 && rank == 4) || (color == 1 && rank == 3)) {
-            if (file > 0 && board[rank][file - 1] != null && board[rank][file - 1].name.equals("Pawn")) {
-               out[rank + inc][file - 1] = ((Pawn) board[rank][file - 1]).doublemoved;
+            if (file > 0 && board[rank][file - 1] != null && board[rank][file - 1].getName().equals("Pawn")) {
+               out[rank + inc][file - 1] = ((Pawn) board[rank][file - 1]).getDoubleMoved();
             }
-            if (file < board[0].length - 1 && board[rank][file + 1] != null && board[rank][file + 1].name.equals("Pawn")) {
-               out[rank + inc][file + 1] = ((Pawn) board[rank][file + 1]).doublemoved;
+            if (file < board[0].length - 1 && board[rank][file + 1] != null && board[rank][file + 1].getName().equals("Pawn")) {
+               out[rank + inc][file + 1] = ((Pawn) board[rank][file + 1]).getDoubleMoved();
             }
 
         }
-
-
-
         return out;
+    }
+
+    public boolean getDoubleMoved() {
+        return doublemoved;
     }
 }

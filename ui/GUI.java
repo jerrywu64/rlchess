@@ -42,7 +42,6 @@ public class GUI extends JFrame implements MouseListener {
         backpanel.add(white, BorderLayout.SOUTH);
 
         JPanel boardpanel = new JPanel(new GridLayout(8, 8));
-        boardpanel.addMouseListener(this);
         board = new Square[8][8];
 
         game = new Game(new RLBoard());
@@ -53,7 +52,7 @@ public class GUI extends JFrame implements MouseListener {
                 board[i][j].setPreferredSize(new Dimension(squaresize, squaresize));
                 board[i][j].setOpaque(true);
                 board[i][j].setFont(new Font(Font.SANS_SERIF, Font.PLAIN, squaresize - 10));
-                // board[i][j].addMouseListener(this);
+                board[i][j].addMouseListener(this);
                 if ((i + j)% 2 == 1) board[i][j].setBackground(Color.gray);
                 else board[i][j].setBackground(Color.white);
                 boardpanel.add(board[i][j]);
@@ -78,12 +77,12 @@ public class GUI extends JFrame implements MouseListener {
 
     public String getIcon(Piece p) {
         if (p == null) return "";
-        if (p.symbol.equals("K")) return "" + (char) (9812 + p.color * 6);
-        else if (p.symbol.equals("Q")) return "" + (char) (9813 + p.color * 6);
-        else if (p.symbol.equals("R")) return "" + (char) (9814 + p.color * 6);
-        else if (p.symbol.equals("B")) return "" + (char) (9815 + p.color * 6);
-        else if (p.symbol.equals("N")) return "" + (char) (9816 + p.color * 6);
-        else if (p.symbol.equals("P")) return "" + (char) (9817 + p.color * 6);
+        if (p.getSymbol().equals("K")) return "" + (char) (9812 + p.getColor() * 6);
+        else if (p.getSymbol().equals("Q")) return "" + (char) (9813 + p.getColor() * 6);
+        else if (p.getSymbol().equals("R")) return "" + (char) (9814 + p.getColor() * 6);
+        else if (p.getSymbol().equals("B")) return "" + (char) (9815 + p.getColor() * 6);
+        else if (p.getSymbol().equals("N")) return "" + (char) (9816 + p.getColor() * 6);
+        else if (p.getSymbol().equals("P")) return "" + (char) (9817 + p.getColor() * 6);
         else return null;
     }
 
@@ -97,7 +96,7 @@ public class GUI extends JFrame implements MouseListener {
         } else {
             Piece p = game.board.board[selected.getRank()][selected.getFile()];
             boolean[][] moves;
-            if (p == null || p.color != game.board.turn) {
+            if (p == null || p.getColor() != game.board.turn) {
                 selected = null;
                 moves = new boolean[8][8];
             } else {
@@ -129,24 +128,8 @@ public class GUI extends JFrame implements MouseListener {
     }
 
     public void mouseClicked(MouseEvent e) {
-        // System.out.println("Clickmouse!");
-        Square square = null;
+        Square square = (Square) e.getSource();
         Point click = e.getPoint();
-        // System.out.println(click.x + " " + click.y);
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                Point sq = board[i][j].getLocation();
-                // sq.translate(-board[0][0].getLocation().x, -board[0][0].getLocation().y);
-                Dimension dim = board[i][j].getSize();
-                if (click.x - sq.x >= 0 && click.x - sq.x < dim.width && 
-                        click.y - sq.y >= 0 && click.y - sq.y < dim.height) {
-                    /* if (board[i][j].getBackground().equals(Color.yellow))
-                        board[i][j].setBackground((i+j)%2==0?Color.white:Color.gray);
-                    else board[i][j].setBackground(Color.yellow);*/
-                    square = board[i][j];
-                }
-            }
-        }
         if (selected == null) { // Selecting new square
             selected = square;
         } else {

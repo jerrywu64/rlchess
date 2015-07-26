@@ -31,7 +31,7 @@ public class King extends Piece {
                 }
             }
         }
-        if (!moved && !isAttacked(rank, file, board)) { // castling
+        if (!hasMoved() && !isAttacked(rank, file, board)) { // castling
             int r = color * 7;
             if (canCastleKingside(board)) out[r][6] = true;
             if (canCastleQueenside(board)) out[r][2] = true;
@@ -48,7 +48,9 @@ public class King extends Piece {
                         board[i][j].color == color) 
                     continue;
                 Piece p = board[i][j];
-                if (p.symbol.equals("K")) {
+                if (p.getSymbol().equals("K")) {
+                    // Special case so we don't run into an infinite loop of
+                    // checking for whether the king can castle
                     if (Math.abs(p.rank - r) < 2 && Math.abs(p.file - c) < 2) return true;
                 } else if (p.getMoves(board)[r][c]) return true;
             }
@@ -61,16 +63,16 @@ public class King extends Piece {
         int r = color * 7;
         return board[r][5] == null && !isAttacked(r, 5, board) &&
             board[r][6] == null && !isAttacked(r, 6, board) &&
-            board[r][7] != null && board[r][7].symbol.equals("R") &&
-            board[r][7].color == color && !board[r][7].moved;
+            board[r][7] != null && board[r][7].getSymbol().equals("R") &&
+            board[r][7].color == color && !board[r][7].hasMoved();
     }
     public boolean canCastleQueenside(Piece[][] board) {
         int r = color * 7;
         return board[r][3] == null && !isAttacked(r, 3, board) &&
             board[r][2] == null && !isAttacked(r, 2, board) &&
             board[r][1] == null &&
-            board[r][0] != null && board[r][0].symbol.equals("R") &&
-            board[r][0].color == color && !board[r][0].moved;
+            board[r][0] != null && board[r][0].getSymbol().equals("R") &&
+            board[r][0].color == color && !board[r][0].hasMoved();
     }
        
 }

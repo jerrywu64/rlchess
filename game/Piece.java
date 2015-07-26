@@ -8,23 +8,26 @@ import java.io.IOException;
 
 public abstract class Piece {
     // May consider making some of these private
-    public String symbol;
-    public String name;
-    public int color; // 0 for white, 1 for black. Indexes into icons[].
-    public BufferedImage[] icons;
-    public int rank; // 0 through 7 converts to 1 through 8
-    public int file; // 0 through 7 converts to a through h
-    public int prrank; // previous rank, mostly for en passant
-    public int prfile; // previous file
-    public boolean moved; // for castling
+    private String symbol;
+    private String name;
+    protected int color; // 0 for white, 1 for black. Indexes into icons[].
+    protected int rank; // 0 through 7 converts to 1 through 8
+    protected int file; // 0 through 7 converts to a through h
+    private boolean moved; // for castling, indicates whether it has moved yet
+
+    public String getSymbol() { return symbol; }
+    public String getName() { return name; }
+    public int getColor() { return color; }
+    public int getRank() { return rank; }
+    public int getFile() { return file; }
+    public boolean hasMoved() { return moved; }
+    // private BufferedImage[] icons; (deprecated)
+    // public BufferedImage getIcon() { return icons[color]; }
 
     // Returns a boolean array of whether the target square is a possible
-    // move destination.
+    // move destination. Disregards whether it puts the king in check.
     public abstract boolean[][] getMoves(Piece[][] board);
 
-    public BufferedImage getIcon() {
-        return icons[color];
-    }
 
     public String getLocation() {
         /*
@@ -35,25 +38,12 @@ public abstract class Piece {
     }
 
     public void setLocation(String loc) {
-        prrank = rank;
-        prfile = file;
-        /*
-        if (loc == null) {
-            rank = -1;
-            file = -1;
-        } else {
-            rank = loc.charAt(1) - '1';
-            file = loc.charAt(0) - 'a';
-        }
-        */
         int[] conv = Board.convFromNot(loc);
         setLocation(conv[0], conv[1]);
     }
 
     public void setLocation(int r, int f) {
         moved = rank != -1 && (moved || rank != r || file != f);
-        prrank = rank;
-        prfile = file;
         rank = r;
         file = f;
     }
@@ -63,11 +53,9 @@ public abstract class Piece {
         this.name = name;
         this.color = color;
         String ext = ".png";
-        icons = new BufferedImage[2];
+        // icons = new BufferedImage[2];
         rank = -1;
         file = -1;
-        prrank = -1;
-        prfile = -1;
         moved = false;
 
         /* don't have images yet

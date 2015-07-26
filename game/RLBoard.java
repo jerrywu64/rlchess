@@ -14,8 +14,10 @@ public class RLBoard extends Board {
         // Back up target location
         int targr = targ.rank;
         int targf = targ.file;
-        // Don't worry about en passant being a special case 
-        // since everything will die anyway
+        if (piece.getName().equals("Pawn") && piece.getRank() == targ.getRank()) {
+            // En passant; the explosion counts as being on the 6th (or 3rd) rank
+            targr = targ.rank + targ.getColor() * 2 - 1;
+        }
         for (int i = -1; i < 2; i++) {
             for (int j = -1; j < 2; j++) {
                 if (targr + i >= 0 && targr + i < board.length &&

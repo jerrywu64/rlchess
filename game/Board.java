@@ -14,10 +14,8 @@ public class Board {
         board = new Piece[8][8];
         resetBoard();
         turn = 0;
-        
-
-
     }
+
     public void clearBoard() {
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
@@ -56,12 +54,12 @@ public class Board {
         if (!piece.getMoves(board)[destarr[0]][destarr[1]]) return false; // invalid move attempt
         if (board[destarr[0]][destarr[1]] == null) {
             // System.out.println("Moving.");
-            if (piece.name.equals("Pawn") && piece.file != destarr[1]) {
+            if (piece.getName().equals("Pawn") && piece.file != destarr[1]) {
                 // En Passant
                 // System.out.println("EP!");
                 capture(piece, board[piece.rank][destarr[1]]);
             } else {
-                if (piece.symbol.equals("K") && Math.abs(piece.file - destarr[1]) == 2) {
+                if (piece.getSymbol().equals("K") && Math.abs(piece.file - destarr[1]) == 2) {
                     // Castling, move the rook
                     if (piece.file < destarr[1]) { // Kingside
                         board[piece.rank][5] = board[piece.rank][7];
@@ -118,7 +116,7 @@ public class Board {
     // Uses the given peice to capture the target piece.
     protected void capture(Piece piece, Piece targ) {
         board[piece.rank][piece.file] = null;
-        if (piece.name.equals("Pawn") && piece.rank == targ.rank) {
+        if (piece.getName().equals("Pawn") && piece.rank == targ.rank) {
             int newrank = targ.rank + 1 - 2 * piece.color;
             board[newrank][targ.file] = piece;
             board[targ.rank][targ.file] = null;

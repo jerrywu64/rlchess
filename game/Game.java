@@ -17,8 +17,6 @@ public class Game {
     public static void main(String[] args) {
         Game g = new Game();
         g.runConsole();
-
-
     }
 
     // Playing Chess in console
@@ -88,13 +86,6 @@ public class Game {
             if (checkCheck(board.turn)) System.out.println("Check!");
 
         }
-            
-
-
-
-
-
-
     }
 
     public void printBoard(Piece selected) {
@@ -112,7 +103,7 @@ public class Game {
                 if (board.board[i][j] == null) {
                     System.out.print(mchar + ".." + mchar);
                 } else {
-                    System.out.print(mchar+board.board[i][j].color+board.board[i][j].symbol+mchar);
+                    System.out.print(mchar+board.board[i][j].color+board.board[i][j].getSymbol()+mchar);
                 }
                 System.out.print("  ");
             }
@@ -124,8 +115,8 @@ public class Game {
 
     public void checkPromotions(String in) {
         for (int i = 0; i < board.board[0].length; i++) {
-            if (board.board[0][i] != null && board.board[0][i].name.equals("Pawn")) promote(0, i, in);
-            if (board.board[7][i] != null && board.board[7][i].name.equals("Pawn")) promote(7, i, in);
+            if (board.board[0][i] != null && board.board[0][i].getName().equals("Pawn")) promote(0, i, in);
+            if (board.board[7][i] != null && board.board[7][i].getName().equals("Pawn")) promote(7, i, in);
         }
     }
     public void promote(int rank, int file, String in) {
@@ -137,7 +128,7 @@ public class Game {
         }
         int c = board.board[rank][file].color;
         Piece piece = Piece.getPiece(c, cin, rank, file);
-        while (piece == null || piece.symbol.equals("K") || piece.symbol.equals("P")) {
+        while (piece == null || piece.getSymbol().equals("K") || piece.getSymbol().equals("P")) {
             if (piece == null) {
                 System.out.println("Invalid input.");
             } else {
@@ -154,7 +145,7 @@ public class Game {
         for (int i = 0; i < board.board.length; i++) {
             for (int j = 0; j < board.board[i].length; j++) {
                 if (board.board[i][j] != null && 
-                        board.board[i][j].symbol.equals("K") && 
+                        board.board[i][j].getSymbol().equals("K") && 
                         board.board[i][j].color == c) {
                     int[] out = new int[2];
                     out[0] = i;
@@ -246,7 +237,7 @@ public class Game {
             for (int j = 0; j < board.board[i].length; j++) {
                 if (fromfile != -1 && j != fromfile) continue;
                 Piece p = board.board[i][j];
-                if (p == null || p.color != c || !p.symbol.equals(symbol)) continue;
+                if (p == null || p.color != c || !p.getSymbol().equals(symbol)) continue;
                 if (rank == -1) {
                     for (int k = 0; k < board.board.length; k++) {
                         if (p.getMoves(board.board)[k][file]) {

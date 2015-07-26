@@ -17,11 +17,6 @@ public class Queen extends Piece {
 
     public boolean[][] getMoves(Piece[][] board) {
         boolean[][] out = new boolean[board.length][board[0].length];
-        /* for (int i = 0; i < out.length; i++) {
-            for (int j = 0; j < out[0].length; i++) {
-                out[i][j] = false;
-            }
-        } */
         boolean[] finished = new boolean[8];
         int[] ranksweep = new int[8];
         int[] filesweep = new int[8];
@@ -63,44 +58,6 @@ public class Queen extends Piece {
                 }
             }
         }
-
-
-
-
-        /*
-        for (int i = rank + 1; i < board.length; i++) {
-            if (board[i][file] == null) {
-                out[i][file] = true;
-            } else {
-                out[i][fi;e] = (color != board[i][file].color);
-                break;
-            }
-        }
-        for (int i = rank - 1; i > -1; i--) {
-            if (board[i][file] == null) {
-                out[i][file] = true;
-            } else {
-                out[i][fi;e] = (color != board[i][file].color);
-                break;
-            }
-        }
-        for (int j = file + 1; j < board[0].length; j++) {
-            if (board[rank][j] == null) {
-                out[rank][j] = true;
-            } else {
-                out[rank][j] = (color != board[rank][j].color);
-                break;
-            }
-        }
-        for (int j = file - 1; j > 0; j--) {
-            if (board[rank][j] == null) {
-                out[rank][j] = true;
-            } else {
-                out[rank][j] = (color != board[rank][j].color);
-                break;
-            }
-        }*/
-
         return out;
     }
 }
