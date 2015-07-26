@@ -45,14 +45,14 @@ public class GUI extends JFrame implements MouseListener {
         boardpanel.addMouseListener(this);
         board = new Square[8][8];
 
-        game = new Game();
+        game = new Game(new RLBoard());
 
         for (int i = 7; i >= 0; i--) {
             for (int j = 0; j < 8; j++) {
                 board[i][j] = new Square(getIcon(game.board.board[i][j]), i, j);
                 board[i][j].setPreferredSize(new Dimension(squaresize, squaresize));
                 board[i][j].setOpaque(true);
-                board[i][j].setFont(new Font("Serif", Font.PLAIN, squaresize - 10));
+                board[i][j].setFont(new Font(Font.SANS_SERIF, Font.PLAIN, squaresize - 10));
                 // board[i][j].addMouseListener(this);
                 if ((i + j)% 2 == 1) board[i][j].setBackground(Color.gray);
                 else board[i][j].setBackground(Color.white);

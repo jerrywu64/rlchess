@@ -116,7 +116,7 @@ public class Board {
         
 
     // Uses the given peice to capture the target piece.
-    private void capture(Piece piece, Piece targ) {
+    protected void capture(Piece piece, Piece targ) {
         board[piece.rank][piece.file] = null;
         if (piece.name.equals("Pawn") && piece.rank == targ.rank) {
             int newrank = targ.rank + 1 - 2 * piece.color;

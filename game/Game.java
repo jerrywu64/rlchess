@@ -9,8 +9,9 @@ public class Game {
 
     public Game() {
         board = new Board();
-
-
+    }
+    public Game(Board b) {
+        board = b;
     }
 
     public static void main(String[] args) {
