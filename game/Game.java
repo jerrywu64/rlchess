@@ -34,7 +34,7 @@ public class Game {
                 Piece selected = null;
                 try {
                     int[] rf = Board.convFromNot(sq);
-                    selected = board.board[rf[0]][rf[1]];
+                    selected = board.getBoardCopy()[rf[0]][rf[1]];
                     if (selected == null) {
                         System.out.println("That square is empty.");
                         continue;
@@ -92,18 +92,18 @@ public class Game {
         System.out.println("Turn: "+board.turn);
         boolean[][] moves;
         if (selected == null) {
-            moves = new boolean[board.board.length][board.board[0].length];
+            moves = new boolean[board.getBoardCopy().length][board.getBoardCopy()[0].length];
         } else {
-            moves = selected.getMoves(board.board);
+            moves = selected.getMoves(board.getBoardCopy());
         }
-        for (int i = board.board.length - 1; i >= 0; i--) {
-            for (int j =0; j < board.board[i].length; j++) {
+        for (int i = board.getBoardCopy().length - 1; i >= 0; i--) {
+            for (int j =0; j < board.getBoardCopy()[i].length; j++) {
                 String mchar = moves[i][j]?"x":"."; // except not actually a char                    
                 if (selected != null && selected.rank == i && selected.file == j) mchar = "!";
-                if (board.board[i][j] == null) {
+                if (board.getBoardCopy()[i][j] == null) {
                     System.out.print(mchar + ".." + mchar);
                 } else {
-                    System.out.print(mchar+board.board[i][j].color+board.board[i][j].getSymbol()+mchar);
+                    System.out.print(mchar+board.getBoardCopy()[i][j].color+board.getBoardCopy()[i][j].getSymbol()+mchar);
                 }
                 System.out.print("  ");
             }
@@ -114,9 +114,9 @@ public class Game {
     }
 
     public void checkPromotions(String in) {
-        for (int i = 0; i < board.board[0].length; i++) {
-            if (board.board[0][i] != null && board.board[0][i].getName().equals("Pawn")) promote(0, i, in);
-            if (board.board[7][i] != null && board.board[7][i].getName().equals("Pawn")) promote(7, i, in);
+        for (int i = 0; i < board.getBoardCopy()[0].length; i++) {
+            if (board.getBoardCopy()[0][i] != null && board.getBoardCopy()[0][i].getName().equals("Pawn")) promote(0, i, in);
+            if (board.getBoardCopy()[7][i] != null && board.getBoardCopy()[7][i].getName().equals("Pawn")) promote(7, i, in);
         }
     }
     public void promote(int rank, int file, String in) {
@@ -126,7 +126,8 @@ public class Game {
             System.out.println("Choose piece to promote to.");
             cin = sc.nextLine();
         }
-        int c = board.board[rank][file].color;
+        int c = board.getBoardCopy()[rank][file].color;
+        // This should be cleaned up.
         Piece piece = Piece.getPiece(c, cin, rank, file);
         while (piece == null || piece.getSymbol().equals("K") || piece.getSymbol().equals("P")) {
             if (piece == null) {
@@ -137,16 +138,16 @@ public class Game {
             cin = sc.nextLine();
             piece = Piece.getPiece(c, cin, rank, file);
         }
-        board.board[rank][file] = piece;
+        board.promote(rank, file, cin);
     }
 
     public int[] findKing(int c) { // Finds a king of the given color
         // or returns null if none exists.
-        for (int i = 0; i < board.board.length; i++) {
-            for (int j = 0; j < board.board[i].length; j++) {
-                if (board.board[i][j] != null && 
-                        board.board[i][j].getSymbol().equals("K") && 
-                        board.board[i][j].color == c) {
+        for (int i = 0; i < board.getBoardCopy().length; i++) {
+            for (int j = 0; j < board.getBoardCopy()[i].length; j++) {
+                if (board.getBoardCopy()[i][j] != null && 
+                        board.getBoardCopy()[i][j].getSymbol().equals("K") && 
+                        board.getBoardCopy()[i][j].color == c) {
                     int[] out = new int[2];
                     out[0] = i;
                     out[1] = j;
@@ -162,7 +163,7 @@ public class Game {
         // such king exists. Returns this for the bottom (and then left)
         // king if multiple kings exit.
         int[] loc = findKing(c);
-        return ((King) board.board[loc[0]][loc[1]]).isAttacked(loc[0], loc[1], board.board);
+        return ((King) board.getBoardCopy()[loc[0]][loc[1]]).isAttacked(loc[0], loc[1], board.getBoardCopy());
     }
 
     // Inputs a move in standard notation, and returns 
@@ -217,7 +218,7 @@ public class Game {
             }
             file = move.charAt(1 + offset) - 'a';
             rank = move.charAt(2 + offset) - '1';
-            if (board.board[rank][file] == null) return null;
+            if (board.getBoardCopy()[rank][file] == null) return null;
         } else if (move.equals("0-0") || move.equals("0-0-0")) { // castle
             rank = c * 7;
             fromrank = c * 7;
@@ -232,21 +233,21 @@ public class Game {
         String ret = null;
         // System.out.println("Decoded:");
         // System.out.println("Rank File Fromrank Fromfile Symbol: " + rank + " " + file + " " + fromrank + " " + fromfile + " " + symbol);
-        for (int i = 0; i < board.board.length; i++) {
+        for (int i = 0; i < board.getBoardCopy().length; i++) {
             if (fromrank != -1 && i != fromrank) continue;
-            for (int j = 0; j < board.board[i].length; j++) {
+            for (int j = 0; j < board.getBoardCopy()[i].length; j++) {
                 if (fromfile != -1 && j != fromfile) continue;
-                Piece p = board.board[i][j];
+                Piece p = board.getBoardCopy()[i][j];
                 if (p == null || p.color != c || !p.getSymbol().equals(symbol)) continue;
                 if (rank == -1) {
-                    for (int k = 0; k < board.board.length; k++) {
-                        if (p.getMoves(board.board)[k][file]) {
+                    for (int k = 0; k < board.getBoardCopy().length; k++) {
+                        if (p.getMoves(board.getBoardCopy())[k][file]) {
                             if (ret != null) return "ambiguous";
                             ret = Board.convToNot(i, j) + Board.convToNot(k, file);
                         }
                     }
                 } else {
-                    if (p.getMoves(board.board)[rank][file]) {
+                    if (p.getMoves(board.getBoardCopy())[rank][file]) {
                         if (ret != null) return "ambiguous";
                         ret = Board.convToNot(i, j) + Board.convToNot(rank, file);
                     }

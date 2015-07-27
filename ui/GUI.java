@@ -41,14 +41,15 @@ public class GUI extends JFrame implements MouseListener {
         backpanel.add(black, BorderLayout.NORTH);
         backpanel.add(white, BorderLayout.SOUTH);
 
-        JPanel boardpanel = new JPanel(new GridLayout(8, 8));
+        JPanel boardpanel = new JPanel(new GridLayout(9, 9));
         board = new Square[8][8];
 
         game = new Game(new RLBoard());
 
         for (int i = 7; i >= 0; i--) {
+            boardpanel.add(new JLabel(""+(1+i), SwingConstants.CENTER));
             for (int j = 0; j < 8; j++) {
-                board[i][j] = new Square(getIcon(game.board.board[i][j]), i, j);
+                board[i][j] = new Square(getIcon(game.board.getBoardCopy()[i][j]), i, j);
                 board[i][j].setPreferredSize(new Dimension(squaresize, squaresize));
                 board[i][j].setOpaque(true);
                 board[i][j].setFont(new Font(Font.SANS_SERIF, Font.PLAIN, squaresize - 10));
@@ -57,6 +58,10 @@ public class GUI extends JFrame implements MouseListener {
                 else board[i][j].setBackground(Color.white);
                 boardpanel.add(board[i][j]);
             }
+        }
+        boardpanel.add(new JLabel(""));
+        for (int i = 0; i < 8; i++) {
+            boardpanel.add(new JLabel(""+(char) ('a'+i), SwingConstants.CENTER));
         }
 
         backpanel.add(boardpanel, BorderLayout.CENTER);
@@ -94,13 +99,13 @@ public class GUI extends JFrame implements MouseListener {
                 }
             }
         } else {
-            Piece p = game.board.board[selected.getRank()][selected.getFile()];
+            Piece p = game.board.getBoardCopy()[selected.getRank()][selected.getFile()];
             boolean[][] moves;
             if (p == null || p.getColor() != game.board.turn) {
                 selected = null;
                 moves = new boolean[8][8];
             } else {
-                moves = p.getMoves(game.board.board);
+                moves = p.getMoves(game.board.getBoardCopy());
             }
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
@@ -113,9 +118,10 @@ public class GUI extends JFrame implements MouseListener {
                 }
             }
         }
+        checkPromotions();
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                board[i][j].setText(getIcon(game.board.board[i][j]));
+                board[i][j].setText(getIcon(game.board.getBoardCopy()[i][j]));
             }
         }
         if (game.board.turn == 0) {
@@ -127,14 +133,41 @@ public class GUI extends JFrame implements MouseListener {
         }
     }
 
+    private void checkPromotions() {
+        for (int i = 0; i < 8; i++) {
+            if (game.board.getBoardCopy()[0][i] != null && game.board.getBoardCopy()[0][i].getName().equals("Pawn")) promote(0, i);
+            if (game.board.getBoardCopy()[7][i] != null && game.board.getBoardCopy()[7][i].getName().equals("Pawn")) promote(7, i);
+        }
+    }
+
+    // Promotes the pice on (rank, file). Assumes it's a pawn and promotion is possible.
+    private void promote(int rank, int file) {
+        String[] options = {"Q", "R", "B", "N"};
+        try {
+            game.board.promote(rank, file, (String) JOptionPane.showInputDialog(
+                        this, 
+                        "Choose piece to promote to.",
+                        "Promotion",
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        options,
+                        "Q"));
+        } catch (NullPointerException e) {
+            System.out.println("Promotion piece not selected. Defaulting to queen.");
+            game.board.promote(rank, file, "Q");
+        }
+
+
+    }
+
     public void mouseClicked(MouseEvent e) {
         Square square = (Square) e.getSource();
         Point click = e.getPoint();
         if (selected == null) { // Selecting new square
             selected = square;
         } else {
-            Piece p = game.board.board[selected.getRank()][selected.getFile()];
-            if (p.getMoves(game.board.board)[square.getRank()][square.getFile()]) {
+            Piece p = game.board.getBoardCopy()[selected.getRank()][selected.getFile()];
+            if (p.getMoves(game.board.getBoardCopy())[square.getRank()][square.getFile()]) {
                 game.board.move(selected.getRank(), selected.getFile(), square.getRank(), square.getFile());
             }
             selected = null;

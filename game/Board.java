@@ -6,14 +6,23 @@ public class Board {
     // (0, 0) is bottom left
     // first coordinate is rank, second is file
     // so relative to arrays, the board is upside-down
-    public Piece[][] board;
+    protected Piece[][] board;
     public int turn; // corresponds to color
-
     
     public Board() {
         board = new Piece[8][8];
         resetBoard();
         turn = 0;
+    }
+
+    public Piece[][] getBoardCopy() {
+        Piece[][] out = new Piece[board.length][board[0].length];
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (board[i][j] != null) out[i][j] = board[i][j].getClone();
+            }
+        }
+        return out;
     }
 
     public void clearBoard() {
@@ -132,6 +141,19 @@ public class Board {
 
     }
 
+    public boolean promote(int rank, int file, String symbol) {
+        // Attempts to promote the piece on the specified
+        // rank and file, rejects if it's not a valid promotion.
+        // Returns false if rejected, true otherwise.
+        Piece p = board[rank][file];
+        if (p == null || !p.getSymbol().equals("P") || 
+                p.getColor() * 7 != 7 - rank || 
+                !symbol.matches("[QRBN]")) return false;
+        board[rank][file] = Piece.getPiece(p.color, symbol, rank, file);
+        return true;
+
+    }
+
     public static int[] convFromNot(String loc) {
         int[] out = new int[2];
         if (loc == null) {
@@ -149,11 +171,11 @@ public class Board {
         return "" + ((char) (c + 'a')) + (r + 1);
     }
 
-    public void place(int color, String name, int r, int c) {
+    private void place(int color, String name, int r, int c) {
         board[r][c] = Piece.getPiece(color, name, r, c);
     }
 
-    public void place(int color, String name, String loc) {
+    private void place(int color, String name, String loc) {
         int[] conv = convFromNot(loc);
         place(color, name, conv[0], conv[1]);
     }

@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.IOException;
 
 
-public abstract class Piece {
+public abstract class Piece implements Cloneable {
     // May consider making some of these private
     private String symbol;
     private String name;
@@ -89,6 +89,15 @@ public abstract class Piece {
         Piece out = getPiece(color, name);
         if (out != null) out.setLocation(r, c);
         return out;
+    }
+
+    public Piece getClone() {
+        try {
+            return (Piece) super.clone();
+        } catch (CloneNotSupportedException e) {
+            System.out.println("WARNING: Clone attempt failed, returning self");
+            return this;
+        }
     }
 
 
