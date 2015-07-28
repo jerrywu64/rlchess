@@ -163,6 +163,7 @@ public class Game {
         // such king exists. Returns this for the bottom (and then left)
         // king if multiple kings exit.
         int[] loc = findKing(c);
+        if (loc == null) return false;
         return ((King) board.getBoardCopy()[loc[0]][loc[1]]).isAttacked(loc[0], loc[1], board.getBoardCopy());
     }
 
@@ -200,21 +201,27 @@ public class Game {
             }
             symbol = "P";
             if (fromfile == file) return null;               
-        } else if (move.matches("[NBRQK][a-h1-8]?[a-h][1-8]")) { // piece movement
+        } else if (move.matches("[NBRQK][a-h]?[1-8]?[a-h][1-8]")) { // piece movement
             symbol = "" + move.charAt(0);
             int offset = move.length() - 3;
             if (move.length() == 4) {
                 if (Character.isDigit(move.charAt(1))) fromrank = move.charAt(1) - '1';
                 else fromfile = move.charAt(1) - 'a';
+            } else if (move.length() == 5) {
+                fromfile = move.charAt(1) - 'a';
+                fromrank = move.charAt(2) - '1';
             }
             file = move.charAt(1 + offset) - 'a';
             rank = move.charAt(2 + offset) - '1';
-        } else if (move.matches("[NBRQK][a-h1-8]?x[a-h][1-8]")) { // piece capture
+        } else if (move.matches("[NBRQK][a-h]?[1-8]?x[a-h][1-8]")) { // piece capture
             symbol = "" + move.charAt(0);
             int offset = move.length() - 3;
             if (move.length() == 5) {
                 if (Character.isDigit(move.charAt(1))) fromrank = move.charAt(1) - '1';
                 else fromfile = move.charAt(1) - 'a';
+            } else if (move.length() == 6) {
+                fromfile = move.charAt(1) - 'a';
+                fromrank = move.charAt(2) - '1';
             }
             file = move.charAt(1 + offset) - 'a';
             rank = move.charAt(2 + offset) - '1';

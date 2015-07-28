@@ -1,5 +1,7 @@
 package game;
 
+import java.util.ArrayList;
+
 //Standard chessboard.
 public class Board {
     // Board orientation:
@@ -7,7 +9,12 @@ public class Board {
     // first coordinate is rank, second is file
     // so relative to arrays, the board is upside-down
     protected Piece[][] board;
-    public int turn; // corresponds to color
+    public int turn; // whose turn it is, not the move number. Corresponds to color.
+    protected int moveNum; // Move number, one-indexed, except it counts a half-move
+                           // in standard notation as a single move, so e.g. if black
+                           // and white both move then this counter is incremented twice.
+    protected ArrayList<Piece[][]> boardhist; // Board history.
+    // TODO protected ArrayList<String> movehist; // Move history, in standard notation.
     
     public Board() {
         board = new Piece[8][8];
@@ -31,6 +38,7 @@ public class Board {
                 board[i][j] = null;
             }
         }
+        moveNum = 0;
     }
     public void resetBoard() {
         clearBoard();
