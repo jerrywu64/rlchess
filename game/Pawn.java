@@ -64,4 +64,15 @@ public class Pawn extends Piece {
     public boolean getDoubleMoved() {
         return doublemoved;
     }
+
+    public static Pawn getPawn(String str) {
+        // Assumes the input string is valid
+        Pawn out = (Pawn) Piece.getPiece(str.substring(0, 5) + "0");
+        if (str.charAt(5) == '1') out.doublemoved = true;
+        return out;
+    }
+
+    public String toString() {
+        return super.toString().substring(0, 5) + (doublemoved?"1":"0");
+    }
 }

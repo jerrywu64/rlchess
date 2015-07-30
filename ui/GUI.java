@@ -16,6 +16,8 @@ public class GUI extends JFrame implements MouseListener {
     private int squaresize = 50;
     private Square selected; // selected square
 
+    private static String start = null;
+
     public GUI(String name) {
         super(name);
 
@@ -45,6 +47,7 @@ public class GUI extends JFrame implements MouseListener {
         board = new Square[8][8];
 
         game = new Game(new RLBoard());
+        if (start != null) game = new Game(new RLBoard(start));
 
         for (int i = 7; i >= 0; i--) {
             boardpanel.add(new JLabel(""+(1+i), SwingConstants.CENTER));
@@ -66,6 +69,16 @@ public class GUI extends JFrame implements MouseListener {
 
         backpanel.add(boardpanel, BorderLayout.CENTER);
 
+        JButton undoButton = new JButton("Undo");
+        undoButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                game.board.undo();
+                updateBoard();
+            }});
+        backpanel.add(undoButton, BorderLayout.EAST);
+
+        updateBoard();
+
         this.setContentPane(backpanel);
         this.pack();
         this.setVisible(true);
@@ -78,6 +91,7 @@ public class GUI extends JFrame implements MouseListener {
                 gui.createGUI();
             }
         });
+        if (args.length > 0) start = args[0];
     }
 
     public String getIcon(Piece p) {

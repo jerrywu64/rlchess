@@ -3,7 +3,7 @@ package game;
 import java.util.Scanner;
 // Standard chess game.
 public class Game {
-    //TODO: promotion, check+checkmate detection, castling
+    //TODO: check+checkmate detection
     
     public Board board;
 
@@ -238,8 +238,6 @@ public class Game {
             return null;
         }
         String ret = null;
-        // System.out.println("Decoded:");
-        // System.out.println("Rank File Fromrank Fromfile Symbol: " + rank + " " + file + " " + fromrank + " " + fromfile + " " + symbol);
         for (int i = 0; i < board.getBoardCopy().length; i++) {
             if (fromrank != -1 && i != fromrank) continue;
             for (int j = 0; j < board.getBoardCopy()[i].length; j++) {

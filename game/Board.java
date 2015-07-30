@@ -10,10 +10,14 @@ public class Board {
     // so relative to arrays, the board is upside-down
     protected Piece[][] board;
     public int turn; // whose turn it is, not the move number. Corresponds to color.
-    protected int moveNum; // Move number, one-indexed, except it counts a half-move
+    protected int movenum; // Number of moves so far, where it counts a half-move
                            // in standard notation as a single move, so e.g. if black
                            // and white both move then this counter is incremented twice.
-    protected ArrayList<Piece[][]> boardhist; // Board history.
+                           // Indexes into boardhist.
+                           // Kind of useless for now (since it's basically boardhist.size() - 1)
+                           // but can conceivably be useful once redoes are allowed.
+    protected ArrayList<Piece[][]> boardhist; // Board history. Last entry should be the
+                                              // current board as returned by getBoardCopy().
     // TODO protected ArrayList<String> movehist; // Move history, in standard notation.
     
     public Board() {
@@ -21,6 +25,25 @@ public class Board {
         resetBoard();
         turn = 0;
     }
+
+    public Board(String str) {
+        board = new Piece[8][8];
+        turn = str.charAt(0) - '0';
+        str = str.substring(1);
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (str.charAt(0) == 'x') str = str.substring(1);
+                else {
+                    board[i][j] = Piece.getPiece(str.substring(0, 6));
+                    str = str.substring(6);
+                }
+            }
+        }
+        movenum = 0;
+        boardhist = new ArrayList<Piece[][]>();
+        boardhist.add(getBoardCopy());
+    }
+
 
     public Piece[][] getBoardCopy() {
         Piece[][] out = new Piece[board.length][board[0].length];
@@ -38,7 +61,6 @@ public class Board {
                 board[i][j] = null;
             }
         }
-        moveNum = 0;
     }
     public void resetBoard() {
         clearBoard();
@@ -62,6 +84,9 @@ public class Board {
         place(1, "Bishop", "f8");
         place(1, "Knight", "g8");
         place(1, "Rook", "h8");
+        movenum = 0;
+        boardhist = new ArrayList<Piece[][]>();
+        boardhist.add(getBoardCopy());
     }
         
     // Returns true if the move was valid (and executed)
@@ -102,6 +127,9 @@ public class Board {
                     board[i][j].setLocation(i, j);
             }
         }
+        movenum++;
+        boardhist.add(getBoardCopy());
+        System.out.println(this.toString());
         return true;
     }
 
@@ -158,9 +186,24 @@ public class Board {
                 p.getColor() * 7 != 7 - rank || 
                 !symbol.matches("[QRBN]")) return false;
         board[rank][file] = Piece.getPiece(p.color, symbol, rank, file);
+        // Update boardhist
+        boardhist.set(movenum, getBoardCopy());
         return true;
-
     }
+
+    // Undoes the last move. Returns true if this is possible, false if
+    // we're at the beginning of the game.
+    public boolean undo() {
+        if (movenum == 0) return false;
+        boardhist.remove(movenum);
+        movenum--;
+        board = boardhist.get(movenum);
+        boardhist.set(movenum, getBoardCopy());
+        turn = (turn + 1) % 2;
+        return true;
+    }
+
+
 
     public static int[] convFromNot(String loc) {
         int[] out = new int[2];
@@ -186,6 +229,17 @@ public class Board {
     private void place(int color, String name, String loc) {
         int[] conv = convFromNot(loc);
         place(color, name, conv[0], conv[1]);
+    }
+
+    public String toString() {
+        String out = "" + turn;
+        for (Piece[] row : board) {
+            for (Piece p : row) {
+                if (p == null) out += "x";
+                else out += p.toString();
+            }
+        }
+        return out;
     }
 }
 

@@ -10,6 +10,10 @@ public class RLBoard extends Board {
         super();
     }
 
+    public RLBoard(String str) {
+        super(str);
+    }
+
     protected void capture(Piece piece, Piece targ) {
         // Back up target location
         int targr = targ.rank;

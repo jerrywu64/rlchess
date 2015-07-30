@@ -70,7 +70,7 @@ public abstract class Piece implements Cloneable {
     // Piece Factories
     public static Piece getPiece(int color, String name) {
         name = name.toLowerCase();
-        if (name.equals("king") || name.equals("j")) return new King(color);
+        if (name.equals("king") || name.equals("k")) return new King(color);
         if (name.equals("queen") || name.equals("q")) return new Queen(color);
         if (name.equals("rook") || name.equals("r")) return new Rook(color);
         if (name.equals("bishop") || name.equals("b")) return new Bishop(color);
@@ -91,6 +91,14 @@ public abstract class Piece implements Cloneable {
         return out;
     }
 
+    public static Piece getPiece(String str) {
+        // Assumes the input string is valid.
+        if (str.charAt(1) == 'P' && str.charAt(5) == '1') return Pawn.getPawn(str);
+        Piece out = getPiece(str.charAt(0) == 'W'?0:1, "" + str.charAt(1), str.substring(2, 4));
+        out.moved = str.charAt(4) == '1'?true:false;
+        return out;
+    }
+
     public Piece getClone() {
         try {
             return (Piece) super.clone();
@@ -98,6 +106,10 @@ public abstract class Piece implements Cloneable {
             System.out.println("WARNING: Clone attempt failed, returning self");
             return this;
         }
+    }
+
+    public String toString() {
+        return (color == 0?"W":"B") + symbol + Board.convToNot(rank, file) + (moved?"1":"0") + "0";
     }
 
 
