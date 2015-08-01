@@ -138,6 +138,7 @@ public class GUI extends JFrame implements MouseListener {
                 board[i][j].setText(getIcon(game.board.getBoardCopy()[i][j]));
             }
         }
+        if (game.checkCheckmate(game.board.turn)) JOptionPane.showMessageDialog(this, "Checkmate");
         if (game.board.turn == 0) {
             white.setBackground(new Color(255, 255, 128));
             black.setBackground(Color.white);

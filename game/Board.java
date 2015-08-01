@@ -44,8 +44,7 @@ public class Board {
         boardhist.add(getBoardCopy());
     }
 
-
-    public Piece[][] getBoardCopy() {
+    public static Piece[][] copyBoard(Piece[][] board) {
         Piece[][] out = new Piece[board.length][board[0].length];
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[0].length; j++) {
@@ -54,6 +53,10 @@ public class Board {
         }
         return out;
     }
+    public Piece[][] getBoardCopy() {
+        return copyBoard(board);
+    }
+    
 
     public void clearBoard() {
         for (int i = 0; i < board.length; i++) {
@@ -94,40 +97,9 @@ public class Board {
     private boolean move(Piece piece, String dest) {
         int[] destarr = convFromNot(dest);
         if (!piece.getMoves(board)[destarr[0]][destarr[1]]) return false; // invalid move attempt
-        if (board[destarr[0]][destarr[1]] == null) {
-            // System.out.println("Moving.");
-            if (piece.getName().equals("Pawn") && piece.file != destarr[1]) {
-                // En Passant
-                // System.out.println("EP!");
-                capture(piece, board[piece.rank][destarr[1]]);
-            } else {
-                if (piece.getSymbol().equals("K") && Math.abs(piece.file - destarr[1]) == 2) {
-                    // Castling, move the rook
-                    if (piece.file < destarr[1]) { // Kingside
-                        board[piece.rank][5] = board[piece.rank][7];
-                        board[piece.rank][7] = null;
-                        board[piece.rank][5].setLocation(piece.rank, 5);
-                    } else { // Queenside
-                        board[piece.rank][3] = board[piece.rank][0];
-                        board[piece.rank][0] = null;
-                        board[piece.rank][3].setLocation(piece.rank, 3);
-                    }
-                } 
-                board[destarr[0]][destarr[1]] = piece;
-                board[piece.rank][piece.file] = null;
-                piece.setLocation(dest);
-                turn = (turn + 1) % 2;
-            }
-        } else {
-            capture(piece, board[destarr[0]][destarr[1]]);
-        }
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board.length; j++) {
-                if (board[i][j] != null && board[i][j] != piece) 
-                    board[i][j].setLocation(i, j);
-            }
-        }
+        simulate(piece, destarr[0], destarr[1], board, null);
         movenum++;
+        turn = (turn + 1) % 2;
         boardhist.add(getBoardCopy());
         System.out.println(this.toString());
         return true;
@@ -158,38 +130,81 @@ public class Board {
     }
         
 
-    // Uses the given peice to capture the target piece.
-    protected void capture(Piece piece, Piece targ) {
+    // Uses the given piece to capture the targeted piece on the given board.
+    protected void capture(Piece piece, Piece targ, Piece[][] board) {
         board[piece.rank][piece.file] = null;
         if (piece.getName().equals("Pawn") && piece.rank == targ.rank) {
             int newrank = targ.rank + 1 - 2 * piece.color;
             board[newrank][targ.file] = piece;
             board[targ.rank][targ.file] = null;
             piece.setLocation(newrank, targ.file);
-            
-
         } else {
             board[targ.rank][targ.file] = piece;
             piece.setLocation(targ.rank, targ.file);
         }
         targ.setLocation(-1, -1);
-        turn = (turn + 1) % 2;
-
     }
 
-    public boolean promote(int rank, int file, String symbol) {
+    public boolean promote(int rank, int file, String symbol, Piece[][] board) {
         // Attempts to promote the piece on the specified
         // rank and file, rejects if it's not a valid promotion.
         // Returns false if rejected, true otherwise.
+        // Operates on the specified board.
         Piece p = board[rank][file];
         if (p == null || !p.getSymbol().equals("P") || 
                 p.getColor() * 7 != 7 - rank || 
                 !symbol.matches("[QRBN]")) return false;
         board[rank][file] = Piece.getPiece(p.color, symbol, rank, file);
-        // Update boardhist
-        boardhist.set(movenum, getBoardCopy());
         return true;
     }
+
+    public boolean promote(int rank, int file, String symbol) {
+        // Same as previous, but operates on this.board.
+        if (promote(rank, file, symbol, board)) {
+            // Update boardhist
+            boardhist.set(movenum, getBoardCopy());
+            return true;
+        } else return false;
+    }
+
+    public void simulate(Piece piece, int torank, int tofile, Piece[][] board, String promote) {
+        // Makes the move on the board and attempts to promote the moved piece.
+        // The move is assumed to be valid.
+        // This isn't static to allow for polymorphism.
+        if (board[torank][tofile] == null) {
+            if (piece.getName().equals("Pawn") && piece.file != tofile) {
+                // En Passant
+                capture(piece, board[piece.rank][tofile], board);
+            } else {
+                if (piece.getSymbol().equals("K") && Math.abs(piece.file - tofile) == 2) {
+                    // Castling, move the rook
+                    if (piece.file < tofile) { // Kingside
+                        board[piece.rank][5] = board[piece.rank][7];
+                        board[piece.rank][7] = null;
+                        board[piece.rank][5].setLocation(piece.rank, 5);
+                    } else { // Queenside
+                        board[piece.rank][3] = board[piece.rank][0];
+                        board[piece.rank][0] = null;
+                        board[piece.rank][3].setLocation(piece.rank, 3);
+                    }
+                } 
+                board[torank][tofile] = piece;
+                board[piece.rank][piece.file] = null;
+                piece.setLocation(torank, tofile);
+            }
+        } else {
+            capture(piece, board[torank][tofile], board);
+        }
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+                if (board[i][j] != null && board[i][j] != piece) 
+                    board[i][j].setLocation(i, j);
+            }
+        }
+        if (promote != null) promote(torank, tofile, promote, board);
+    }
+        
+
 
     // Undoes the last move. Returns true if this is possible, false if
     // we're at the beginning of the game.

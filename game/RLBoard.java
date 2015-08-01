@@ -14,7 +14,7 @@ public class RLBoard extends Board {
         super(str);
     }
 
-    protected void capture(Piece piece, Piece targ) {
+    protected void capture(Piece piece, Piece targ, Piece[][] board) {
         // Back up target location
         int targr = targ.rank;
         int targf = targ.file;
@@ -32,7 +32,6 @@ public class RLBoard extends Board {
                 }
             }
         }
-        turn = (turn + 1) % 2;
     }
 
 }

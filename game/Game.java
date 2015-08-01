@@ -141,13 +141,13 @@ public class Game {
         board.promote(rank, file, cin);
     }
 
-    public int[] findKing(int c) { // Finds a king of the given color
+    public int[] findKing(int c, Piece[][] board) { // Finds a king of the given color
         // or returns null if none exists.
-        for (int i = 0; i < board.getBoardCopy().length; i++) {
-            for (int j = 0; j < board.getBoardCopy()[i].length; j++) {
-                if (board.getBoardCopy()[i][j] != null && 
-                        board.getBoardCopy()[i][j].getSymbol().equals("K") && 
-                        board.getBoardCopy()[i][j].color == c) {
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if (board[i][j] != null && 
+                        board[i][j].getSymbol().equals("K") && 
+                        board[i][j].color == c) {
                     int[] out = new int[2];
                     out[0] = i;
                     out[1] = j;
@@ -158,13 +158,50 @@ public class Game {
         return null;
     }
 
-    public boolean checkCheck(int c) { // returns whether the king
-        // of the specifie color is in check. Returns false if no
-        // such king exists. Returns this for the bottom (and then left)
-        // king if multiple kings exit.
-        int[] loc = findKing(c);
+    public boolean checkCheck(int c, Piece[][] board) {
+        // Returns whether the king of the specified color is in check
+        // on the specified board. Returns false if no such king exists.
+        // Returns this for the bottom (and then left) king if multiple
+        // kings exist.
+        int[] loc = findKing(c, board);
         if (loc == null) return false;
-        return ((King) board.getBoardCopy()[loc[0]][loc[1]]).isAttacked(loc[0], loc[1], board.getBoardCopy());
+        return ((King) board[loc[0]][loc[1]]).isAttacked(loc[0], loc[1], board);
+    }
+    public boolean checkCheck(int c) { // the same, for the current board
+        return checkCheck(c, board.getBoardCopy());
+    }
+
+    public boolean checkCheckmate(int c, Piece[][] brd) {
+        // Returns whether the specified side is in checkmate, assuming
+        // it is their turn of course. More specifically, it returns
+        // whether the specified side has no moves to get them out of check.
+        // King death or unavoidable king death qualifies as checkmate.
+        // No guaranteed behavior if multiple kings exist.
+        Piece[][] curboard = Board.copyBoard(brd);
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                Piece p = curboard[i][j];
+                if (p != null && p.color == c) {
+                    boolean[][] moves = p.getMoves(curboard);
+                    for (int k = 0; k < 8; k++) {
+                        for (int l = 0; l < 8; l++) {
+                            if (moves[k][l]) {
+                                // Promotion doesn't change checkmate status
+                                board.simulate(p.getClone(), k, l, curboard, null);
+                                if (!checkCheck(c, curboard) && findKing(c, curboard) != null) {
+                                    return false;
+                                }
+                                curboard = Board.copyBoard(brd);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+    public boolean checkCheckmate(int c) {
+        return checkCheckmate(c, board.getBoardCopy());
     }
 
     // Inputs a move in standard notation, and returns 
