@@ -1,12 +1,7 @@
 package ai;
 
-public class AI {
+public interface AI {
 
-    public String getMove(int c, Piece[][] board) {
-        // Default implementation: random move
-        // TODO
-        return null;
-    }
+    public String getMove(int c, Piece[][] board);
 
-    // Factory methods for subclasses
 }

@@ -1,6 +1,7 @@
 package game;
 
 import java.util.Scanner;
+import java.util.ArrayList;
 // Standard chess game.
 public class Game {
     //TODO: check+checkmate detection
@@ -176,8 +177,13 @@ public class Game {
         // it is their turn of course. More specifically, it returns
         // whether the specified side has no moves to get them out of check.
         // King death or unavoidable king death qualifies as checkmate.
+        // Killing the enemy king also means you're not checkmated.
         // No guaranteed behavior if multiple kings exist.
+
+        // If your king is dead and the enemy's isn't, you're just dead
+        if (findKing(c, brd) == null && findKing(1-c, brd) != null) return true;
         Piece[][] curboard = Board.copyBoard(brd);
+        /*
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 Piece p = curboard[i][j];
@@ -197,6 +203,15 @@ public class Game {
                     }
                 }
             }
+        }*/
+        for (int[] move : getMoves(c, brd)) {
+            Piece[][] brdcopy = Board.copyBoard(brd);
+            // Don't bother promoting, it doesn't affect checkmate status
+            board.simulate(brdcopy[move[0]][move[1]].getClone(), move[2], move[3], brdcopy, null);
+            // You're not in checkmate if either the enemy king is dead or
+            // a move gets you out of check while keeping your king alive.
+            if (findKing(1 - c, brdcopy) == null || 
+                    (!checkCheck(c, brdcopy) && findKing(c, brdcopy) != null)) return false;
         }
         return true;
     }
@@ -299,6 +314,36 @@ public class Game {
         return ret;
 
     }
+
+    // Returns in an array all possible moves of this color.
+    // Each move is a length-4 int array, as fromrank, fromfile,
+    // torank, tofile.
+    public static ArrayList<int[]> getMoves(int c, Piece[][] board) {
+        ArrayList<int[]> out = new ArrayList<int[]>();
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                Piece p = board[i][j];
+                if (p == null || p.color != c) continue;
+                boolean[][] moves = p.getMoves(board);
+                for (int k = 0; k < board.length; k++) {
+                    for (int l = 0; l < board[k].length; l++) {
+                        if (moves[k][l]) {
+                            int[] move = new int[4];
+                            move[0] = i;
+                            move[1] = j;
+                            move[2] = k;
+                            move[3] = l;
+                            out.add(move);
+                        }
+                    }
+                }
+            }
+        }
+        System.out.println("Moves available: "+out.size());
+        return out;
+    }
+
+
 
 
 
