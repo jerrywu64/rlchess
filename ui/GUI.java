@@ -49,7 +49,7 @@ public class GUI extends JFrame implements MouseListener {
                 ArrayList<int[]> moves = game.getMoves(c, board);
                 System.out.println("Choosing random move.");
                 try {
-                    Thread.sleep(200);
+                    Thread.sleep(50);
                 } catch (InterruptedException e) {
                     System.out.println("Stupid alarm clocks.");
                 }
@@ -102,7 +102,16 @@ public class GUI extends JFrame implements MouseListener {
                 boardpanel.add(board[i][j]);
             }
         }
-        boardpanel.add(new JLabel(""));
+        // because obviously we use the unicode snowman for a reset button
+        JButton reset = new JButton("" + (char) 9731);
+        reset.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, (squaresize - 15)));
+        reset.setMargin(new Insets(0, 0, 0, 0));
+        reset.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                game.board.resetBoard();
+                updateBoard();
+            }});
+        boardpanel.add(reset);
         for (int i = 0; i < 8; i++) {
             boardpanel.add(new JLabel(""+(char) ('a'+i), SwingConstants.CENTER));
         }
