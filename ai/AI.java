@@ -1,7 +1,9 @@
 package ai;
 
+import game.Piece;
+
 public interface AI {
 
-    public String getMove(int c, Piece[][] board);
+    public int[] getMove(int c, Piece[][] board);
 
 }

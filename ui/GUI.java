@@ -5,12 +5,16 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
+import ai.AI;
+import java.util.ArrayList;
 
 
 public class GUI extends JFrame implements MouseListener {
 
-    private JLabel black;
-    private JLabel white;
+    private JButton black;
+    private AI blackai = null;
+    private JButton white;
+    private AI whiteai = null;
     private Square[][] board;
     private Game game; // unless we want to set this up as an instance
     private int squaresize = 50;
@@ -31,14 +35,50 @@ public class GUI extends JFrame implements MouseListener {
         JPanel backpanel = new JPanel(new BorderLayout());
         backpanel.setBorder(BorderFactory.createEmptyBorder(10, squaresize/2, 10, squaresize/2));
 
-        black = new JLabel("Black", SwingConstants.CENTER);
-        white = new JLabel("White", SwingConstants.CENTER);
+        black = new JButton("Black");
+        white = new JButton("White");
         black.setBackground(Color.white);
         black.setOpaque(true);
         white.setBackground(new Color(255, 255, 128));
         white.setOpaque(true);
         black.setPreferredSize(new Dimension(8 * squaresize, squaresize));
         white.setPreferredSize(new Dimension(8 * squaresize, squaresize));
+
+        AI temporaryAI = new AI() {
+            public int[] getMove(int c, Piece[][] board) {
+                ArrayList<int[]> moves = game.getMoves(c, board);
+                System.out.println("Choosing random move.");
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    System.out.println("Stupid alarm clocks.");
+                }
+                return moves.get((int) (Math.random() * moves.size()));
+            }};
+
+        black.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (blackai == null) {
+                    black.setText("blackai");
+                    blackai = temporaryAI;
+                    updateBoard();
+                } else {
+                    blackai = null;
+                    black.setText("Black");
+                }
+            }});
+        white.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (whiteai == null) {
+                    white.setText("whiteai");
+                    whiteai = temporaryAI;
+                    updateBoard();
+                } else {
+                    whiteai = null;
+                    white.setText("White");
+                }
+            }});
+
 
         backpanel.add(black, BorderLayout.NORTH);
         backpanel.add(white, BorderLayout.SOUTH);
@@ -142,9 +182,26 @@ public class GUI extends JFrame implements MouseListener {
         if (game.board.turn == 0) {
             white.setBackground(new Color(255, 255, 128));
             black.setBackground(Color.white);
+            if (whiteai != null && !game.checkCheckmate(game.board.turn)) {
+                SwingUtilities.invokeLater( new Runnable() {
+                    public void run() {
+                        int[] move= whiteai.getMove(0, game.board.getBoardCopy());
+                        game.board.move(move[0], move[1], move[2], move[3]);
+                        updateBoard();
+                    }});
+            }
         } else {
             white.setBackground(Color.white);
             black.setBackground(new Color(255, 255, 128));
+            if (blackai != null && !game.checkCheckmate(game.board.turn)) {
+                SwingUtilities.invokeLater( new Runnable() {
+                    public void run() {
+                        int[] move= blackai.getMove(1, game.board.getBoardCopy());
+                        game.board.move(move[0], move[1], move[2], move[3]);
+                        updateBoard();
+                    }});
+            }
+
         }
     }
 
