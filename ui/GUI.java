@@ -6,6 +6,7 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
 import ai.AI;
+import ai.BasicAI;
 import java.util.ArrayList;
 
 
@@ -45,7 +46,7 @@ public class GUI extends JFrame implements MouseListener {
         white.setPreferredSize(new Dimension(8 * squaresize, squaresize));
 
         AI temporaryAI = new AI() {
-            public int[] getMove(int c, Piece[][] board) {
+            public int[] getMove(int c, Piece[][] board, Board b) {
                 ArrayList<int[]> moves = game.getMoves(c, board);
                 System.out.println("Choosing random move.");
                 try {
@@ -60,7 +61,7 @@ public class GUI extends JFrame implements MouseListener {
             public void actionPerformed(ActionEvent e) {
                 if (blackai == null) {
                     black.setText("blackai");
-                    blackai = temporaryAI;
+                    blackai = new BasicAI();
                     updateBoard();
                 } else {
                     blackai = null;
@@ -71,7 +72,7 @@ public class GUI extends JFrame implements MouseListener {
             public void actionPerformed(ActionEvent e) {
                 if (whiteai == null) {
                     white.setText("whiteai");
-                    whiteai = temporaryAI;
+                    whiteai = new BasicAI();
                     updateBoard();
                 } else {
                     whiteai = null;
@@ -194,7 +195,7 @@ public class GUI extends JFrame implements MouseListener {
             if (whiteai != null && !game.checkCheckmate(game.board.turn)) {
                 SwingUtilities.invokeLater( new Runnable() {
                     public void run() {
-                        int[] move= whiteai.getMove(0, game.board.getBoardCopy());
+                        int[] move= whiteai.getMove(0, game.board.getBoardCopy(), game.board);
                         game.board.move(move[0], move[1], move[2], move[3]);
                         updateBoard();
                     }});
@@ -205,7 +206,7 @@ public class GUI extends JFrame implements MouseListener {
             if (blackai != null && !game.checkCheckmate(game.board.turn)) {
                 SwingUtilities.invokeLater( new Runnable() {
                     public void run() {
-                        int[] move= blackai.getMove(1, game.board.getBoardCopy());
+                        int[] move= blackai.getMove(1, game.board.getBoardCopy(), game.board);
                         game.board.move(move[0], move[1], move[2], move[3]);
                         updateBoard();
                     }});

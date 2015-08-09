@@ -46,7 +46,7 @@ public class Pawn extends Piece {
         // yay doublemoving
         if ((color == 0 && rank == 1) || (color == 1 && rank == 6)) 
             out[rank + 2 * inc][file] = out[rank + inc][file] && 
-                board[rank + inc][file] == null;
+                board[rank + 2 * inc][file] == null;
 
         // yay en passant
         if ((color == 0 && rank == 4) || (color == 1 && rank == 3)) {

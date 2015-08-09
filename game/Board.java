@@ -203,6 +203,11 @@ public class Board {
         }
         if (promote != null) promote(torank, tofile, promote, board);
     }
+
+    // Alternate input method, assumes the move is a valid quadruple.
+    public void simulate(int[] move, Piece[][] board, String promote) {
+        simulate(board[move[0]][move[1]], move[2], move[3], board, promote);
+    }
         
 
 

@@ -142,7 +142,7 @@ public class Game {
         board.promote(rank, file, cin);
     }
 
-    public int[] findKing(int c, Piece[][] board) { // Finds a king of the given color
+    public static int[] findKing(int c, Piece[][] board) { // Finds a king of the given color
         // or returns null if none exists.
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
@@ -339,7 +339,7 @@ public class Game {
                 }
             }
         }
-        System.out.println("Moves available: "+out.size());
+        // System.out.println("Moves available: "+out.size());
         return out;
     }
 
