@@ -7,6 +7,7 @@ import game.*;
 public class BasicAI implements AI {
 
     protected int depth = 0;
+    protected int evals = 0;
     private String[] promarr = {"Q", "R", "N", "B"};
 
     public int[] getMove(int c, Piece[][] pieces, Board board) {
@@ -17,6 +18,7 @@ public class BasicAI implements AI {
         }
         ArrayList<int[]> moves = Game.getMoves(c, pieces);
         depth = 0;
+        evals = 0;
         int bestscore = Integer.MIN_VALUE;
         int[] bestmove = null;
         for (int[] move : moves) {
@@ -73,6 +75,7 @@ public class BasicAI implements AI {
         }
         System.out.println("Best score found: "+bestscore);
         System.out.println("Move: "+Arrays.toString(bestmove));
+        System.out.println("Evaluations made: "+evals);
 
         return bestmove;
     }
@@ -140,6 +143,7 @@ public class BasicAI implements AI {
     }
 
     protected int evaluate(int c, Piece[][] pieces) {
+        evals++;
         int material = 0;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {

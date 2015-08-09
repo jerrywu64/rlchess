@@ -88,6 +88,7 @@ public class Board {
         place(1, "Knight", "g8");
         place(1, "Rook", "h8");
         movenum = 0;
+        turn = 0;
         boardhist = new ArrayList<Piece[][]>();
         boardhist.add(getBoardCopy());
     }
