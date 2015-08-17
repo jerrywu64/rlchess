@@ -10,6 +10,7 @@ import ai.BasicAI;
 import java.util.ArrayList;
 
 
+
 public class GUI extends JFrame implements MouseListener {
 
     private JButton black;

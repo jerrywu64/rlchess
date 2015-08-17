@@ -93,7 +93,7 @@ public class BasicAI implements AI {
             // The heuristic here will be off by however many moves
             // the opponent can make, but whatever. The starting value
             // can be adjusted.
-            return evaluate(c, pieces);
+            return evaluate(c, pieces, board);
         int bestscore = Integer.MIN_VALUE;
         for (int[] move : moves) {
             for (String s : promarr) {
@@ -101,7 +101,7 @@ public class BasicAI implements AI {
                 Piece p = sim[move[0]][move[1]];
                 board.simulate(move, sim, s);
                 if (Game.findKing(1-c, sim) == null) {
-                    if (Game.findKing(c, sim) != null) return 1000000; // win
+                    if (Game.findKing(c, sim) != null) return 1000000 - depth; // win
                     else {
                         if (bestscore < 0) bestscore = 0; // draw
                         break;
@@ -116,7 +116,7 @@ public class BasicAI implements AI {
                         Piece p2 = sim2[threat[0]][threat[1]];
                         board.simulate(threat, sim2, s2);
                         if (Game.findKing(c, sim2) == null) {
-                            if (Game.findKing(1-c, sim2) != null) minscore = -1000000; // loss
+                            if (Game.findKing(1-c, sim2) != null) minscore = -1000000 + depth; // loss
                             else {
                                 if (minscore > 0) minscore = 0; // draw
                                 break;
@@ -129,21 +129,27 @@ public class BasicAI implements AI {
                             // we didn't actually promote, don't bother with
                             // the other possibilities
                             break;
-                        else System.out.println("Tested enemy promotion: "+s2);
+                        // else System.out.println("Tested enemy promotion: "+s2);
                     }
                 }
                 if (minscore >= bestscore) 
                     bestscore = minscore;
                 if (!promoted) 
                     break; 
-                else System.out.println("Tested promotion: "+s);
+                // else System.out.println("Tested promotion: "+s);
             }
         }
         return bestscore;
     }
 
-    protected int evaluate(int c, Piece[][] pieces) {
+    protected int evaluate(int c, Piece[][] pieces, Board board) {
         evals++;
+        return getMaterial(c, pieces) + checkThreats(c, pieces, board) - checkThreats(1-c, pieces, board);
+        //
+
+    }
+
+    protected int getMaterial(int c, Piece[][] pieces) {
         int material = 0;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -154,17 +160,60 @@ public class BasicAI implements AI {
             }
         }
         return material;
-        //
-
     }
 
+
     protected int getValue(Piece p) {
+        if (p.getSymbol().equals("K")) return 1000000;
         if (p.getSymbol().equals("Q")) return 50;
         if (p.getSymbol().equals("R")) return 10;
         if (p.getSymbol().equals("B")) return 5;
         if (p.getSymbol().equals("N")) return 8;
         return 1;
     }
+
+    protected int checkThreats(int c, Piece[][] pieces, Board board) {
+        int out = 0;
+        int mat = getMaterial(c, pieces);
+        ArrayList<int[]> moves = Game.getMoves(c, pieces);
+        for (int[] move : moves) {
+            out += threatFunc(mat + checkRLMaterialDelta(move, pieces));
+        }
+        return out;
+    }
+
+    // Figures out how the material balance changes for a move in
+    // RLChess specifically. 
+    protected int checkRLMaterialDelta(int[] move, Piece[][] pieces) {
+        int out = 0;
+        int c = pieces[move[0]][move[1]].getColor();
+        if (pieces[move[2]][move[3]] == null) {
+            if (pieces[move[0]][move[1]].getSymbol().equals("P") &&
+                    move[1] == 7 - 7 * c) return getValue(Piece.getPiece(0, "Q"));
+            else return 0;
+        } else
+            for (int i = -1; i < 2; i++) {
+                for (int j = -1; j < 2; j++) {
+                    if (move[2] + i >= 0 &&
+                            move[2] + i < pieces.length &&
+                            move[3] + j >= 0 &&
+                            move[3] + j < pieces.length) {
+                        if (pieces[move[2]][move[3]] == null) continue;
+                        else out += (c == pieces[move[2]][move[3]].getColor()?
+                                -1:1) * getValue(pieces[move[2]][move[3]]);
+                    }
+                }
+            }
+        return out;
+    }
+
+
+    // Transforms material from a threat into a more useful form.
+    protected int threatFunc(int in) {
+        // Modified logistic curve
+        return (int) (50./(1+Math.pow(2, -in))) + 1;
+    }
+
 
             
 

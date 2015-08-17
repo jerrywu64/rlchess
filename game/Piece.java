@@ -112,6 +112,16 @@ public abstract class Piece implements Cloneable {
         return (color == 0?"W":"B") + symbol + Board.convToNot(rank, file) + (moved?"1":"0") + "0";
     }
 
+    public boolean equals(Object p) {
+        if (!(p instanceof Piece)) return false;
+        Piece q = (Piece) p;
+        return (q.symbol.equals(symbol) &&
+                q.name.equals(name) &&
+                q.color == color &&
+                q.rank == rank &&
+                q.file == file &&
+                (!q.symbol.matches("[KRP]") || q.moved == moved));
+    }
 
 
 

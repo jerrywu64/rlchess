@@ -75,4 +75,10 @@ public class Pawn extends Piece {
     public String toString() {
         return super.toString().substring(0, 5) + (doublemoved?"1":"0");
     }
+    public boolean equals(Object p) {
+        if (!(p instanceof Pawn)) return false;
+        Pawn q = (Pawn) p;
+        return (super.equals(q) && (( q.doublemoved) == doublemoved));
+    }
 }
+
