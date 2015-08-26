@@ -6,7 +6,7 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
 import ai.AI;
-import ai.BasicAI;
+import ai.PruningAI;
 import java.util.ArrayList;
 
 
@@ -62,7 +62,7 @@ public class GUI extends JFrame implements MouseListener {
             public void actionPerformed(ActionEvent e) {
                 if (blackai == null) {
                     black.setText("blackai");
-                    blackai = new BasicAI();
+                    blackai = new PruningAI();
                     updateBoard();
                 } else {
                     blackai = null;
@@ -73,7 +73,7 @@ public class GUI extends JFrame implements MouseListener {
             public void actionPerformed(ActionEvent e) {
                 if (whiteai == null) {
                     white.setText("whiteai");
-                    whiteai = new BasicAI();
+                    whiteai = new PruningAI();
                     updateBoard();
                 } else {
                     whiteai = null;

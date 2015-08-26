@@ -8,7 +8,7 @@ public class BasicAI implements AI {
 
     protected int depth = 0;
     protected int evals = 0;
-    private String[] promarr = {"Q", "R", "N", "B"};
+    protected final String[] promarr = {"Q", "R", "N", "B"};
 
     public int[] getMove(int c, Piece[][] pieces, Board board) {
         try {

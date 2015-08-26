@@ -33,6 +33,20 @@ public class AIUtils {
         }
     }
 
+    // Sequence is an array of length 5n, the last one being the promotion piece,
+    // indexing into {Q, R, B, N}.
+    public void simulateSequence(int[] sequence, Piece[][] pieces, Board board) {
+        String[] promarr = {"Q", "R", "B", "N"};
+        for (int i = 0; i < sequence.length / 5; i++) {
+            int[] move = new int[4];
+            for (int j = 0; j < 4; j++) {
+                move[j] = sequence[5 * i + j];
+            }
+            board.simulate(move, pieces, promarr[sequence[5 * i + 4]]);
+        }
+    }
+
+
 
         
 
