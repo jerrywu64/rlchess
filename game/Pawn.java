@@ -50,11 +50,13 @@ public class Pawn extends Piece {
 
         // yay en passant
         if ((color == 0 && rank == 4) || (color == 1 && rank == 3)) {
-            if (file > 0 && board[rank][file - 1] != null && board[rank][file - 1].getName().equals("Pawn")) {
-               out[rank + inc][file - 1] = ((Pawn) board[rank][file - 1]).getDoubleMoved();
+            if (file > 0 && board[rank][file - 1] != null && board[rank][file - 1].getName().equals("Pawn")
+                    && ((Pawn) board[rank][file - 1]).getDoubleMoved()) {
+               out[rank + inc][file - 1] = true;
             }
-            if (file < board[0].length - 1 && board[rank][file + 1] != null && board[rank][file + 1].getName().equals("Pawn")) {
-               out[rank + inc][file + 1] = ((Pawn) board[rank][file + 1]).getDoubleMoved();
+            if (file < board[0].length - 1 && board[rank][file + 1] != null && board[rank][file + 1].getName().equals("Pawn")
+                    && ((Pawn) board[rank][file + 1]).getDoubleMoved()) {
+               out[rank + inc][file + 1] = true;
             }
 
         }
