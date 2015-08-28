@@ -6,6 +6,7 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
 import ai.AI;
+import ai.BasicAI;
 import ai.PruningAI;
 import java.util.ArrayList;
 
@@ -112,6 +113,11 @@ public class GUI extends JFrame implements MouseListener {
             public void actionPerformed(ActionEvent e) {
                 game.board.resetBoard();
                 updateBoard();
+                /*
+                System.out.println(new BasicAI().evaluate(0, game.board.getBoardCopy(), game.board));
+                System.out.println(new BasicAI().evaluate(1, game.board.getBoardCopy(), game.board));
+                */
+
             }});
         boardpanel.add(reset);
         for (int i = 0; i < 8; i++) {

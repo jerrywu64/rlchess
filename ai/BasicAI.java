@@ -142,9 +142,10 @@ public class BasicAI implements AI {
         return bestscore;
     }
 
+    // Make this nonpublic later
     protected int evaluate(int c, Piece[][] pieces, Board board) {
         evals++;
-        return getMaterial(c, pieces) + checkThreats(c, pieces, board) - checkThreats(1-c, pieces, board);
+        return getMaterial(c, pieces) + 7 * checkThreats(c, pieces, board) - 4 * checkThreats(1-c, pieces, board);
         //
 
     }
@@ -164,7 +165,7 @@ public class BasicAI implements AI {
 
 
     protected int getValue(Piece p) {
-        if (p.getSymbol().equals("K")) return 1000000;
+        if (p.getSymbol().equals("K")) return 250;
         if (p.getSymbol().equals("Q")) return 50;
         if (p.getSymbol().equals("R")) return 10;
         if (p.getSymbol().equals("B")) return 5;
@@ -178,7 +179,10 @@ public class BasicAI implements AI {
         ArrayList<int[]> moves = Game.getMoves(c, pieces);
         for (int[] move : moves) {
             out += threatFunc(mat + checkRLMaterialDelta(move, pieces));
+            // System.out.println(Arrays.toString(move) + " " + threatFunc(mat + checkRLMaterialDelta(move, pieces)));
         }
+        // System.out.println(out);
+        // System.out.println("--");
         return out;
     }
 
@@ -189,21 +193,29 @@ public class BasicAI implements AI {
         int c = pieces[move[0]][move[1]].getColor();
         if (pieces[move[2]][move[3]] == null) {
             if (pieces[move[0]][move[1]].getSymbol().equals("P") &&
-                    move[1] == 7 - 7 * c) return getValue(Piece.getPiece(0, "Q"));
+                    move[2] == 7 - 7 * c) return getValue(Piece.getPiece(0, "Q"));
             else return 0;
-        } else
+        } else {
             for (int i = -1; i < 2; i++) {
                 for (int j = -1; j < 2; j++) {
                     if (move[2] + i >= 0 &&
                             move[2] + i < pieces.length &&
                             move[3] + j >= 0 &&
                             move[3] + j < pieces.length) {
-                        if (pieces[move[2]][move[3]] == null) continue;
-                        else out += (c == pieces[move[2]][move[3]].getColor()?
-                                -1:1) * getValue(pieces[move[2]][move[3]]);
+                        if (pieces[move[2] + i][move[3] + j] == null) continue;
+                        else {
+                            out += (c == pieces[move[2] + i][move[3] + j].getColor()?
+                                -1:1) * getValue(pieces[move[2] + i][move[3] + j]);
+                            // System.out.println((c == pieces[move[2] + i][move[3] + j].getColor()?
+                            //    -1:1) * getValue(pieces[move[2] + i][move[3] + j]));
+
+                        }
                     }
                 }
             }
+        }
+        // System.out.println(out);
+        // System.out.println();
         return out;
     }
 
@@ -211,7 +223,7 @@ public class BasicAI implements AI {
     // Transforms material from a threat into a more useful form.
     protected int threatFunc(int in) {
         // Modified logistic curve
-        return (int) (50./(1+Math.pow(2, -in))) + 1;
+        return (int) (100./(1+100 * Math.pow(2, -in/5.))) + 1;
     }
 
 

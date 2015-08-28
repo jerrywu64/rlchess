@@ -98,6 +98,16 @@ public class PruningAI extends BasicAI {
         Arrays.sort(movesarr, new MoveComparator());
         int[] best = new int[6];
         best[5] = Integer.MIN_VALUE;
+        /*
+        for (int i = 7; i >= 0; i--) {
+            for (int j = 0; j < 8; j++) {
+                if (pieces[i][j] == null) System.out.print("..");
+                else System.out.print(pieces[i][j].getColor() + pieces[i][j].getSymbol());
+            }
+            System.out.println();
+        }
+        System.out.println(Arrays.deepToString(Arrays.copyOf(movesarr, 5)));
+        */
         for (int i = 0; i < select; i++) {
             int[] move = movesarr[i];
             Piece[][] sim = Board.copyBoard(pieces);
