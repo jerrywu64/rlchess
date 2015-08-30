@@ -18,6 +18,7 @@ public class GUI extends JFrame implements MouseListener {
     private AI blackai = null;
     private JButton white;
     private AI whiteai = null;
+    private boolean[] runai = new boolean[2];
     private Square[][] board;
     private Game game; // unless we want to set this up as an instance
     private int squaresize = 50;
@@ -64,6 +65,7 @@ public class GUI extends JFrame implements MouseListener {
                 if (blackai == null) {
                     black.setText("blackai");
                     blackai = new PruningAI();
+                    selected = null;
                     updateBoard();
                 } else {
                     blackai = null;
@@ -172,7 +174,7 @@ public class GUI extends JFrame implements MouseListener {
         } else {
             Piece p = game.board.getBoardCopy()[selected.getRank()][selected.getFile()];
             boolean[][] moves;
-            if (p == null || p.getColor() != game.board.turn) {
+            if (p == null || p.getColor() != game.board.turn || runai[game.board.turn]) {
                 selected = null;
                 moves = new boolean[8][8];
             } else {
@@ -199,24 +201,60 @@ public class GUI extends JFrame implements MouseListener {
         if (game.board.turn == 0) {
             white.setBackground(new Color(255, 255, 128));
             black.setBackground(Color.white);
-            if (whiteai != null && !game.checkCheckmate(game.board.turn)) {
+            if (whiteai != null && !game.checkCheckmate(game.board.turn) && !runai[0]) {
+                runai[0] = true;
+                selected = null; // clear selection so you don't move while ai is computing
+                updateBoard();
+                SwingWorker<Integer, Integer> sw = new SwingWorker<Integer, Integer>() {
+                    protected Integer doInBackground() {
+                        int[] move= whiteai.getMove(0, game.board.getBoardCopy(), game.board);
+                        if (whiteai != null) game.board.move(move[0], move[1], move[2], move[3]);
+                        return 0;
+                    }
+                    protected void done() {
+                        runai[0] = false;
+                        updateBoard();
+                    }
+                };
+                sw.execute();
+
+                /*
+
                 SwingUtilities.invokeLater( new Runnable() {
                     public void run() {
                         int[] move= whiteai.getMove(0, game.board.getBoardCopy(), game.board);
                         game.board.move(move[0], move[1], move[2], move[3]);
                         updateBoard();
-                    }});
+                    }});*/
             }
         } else {
             white.setBackground(Color.white);
             black.setBackground(new Color(255, 255, 128));
-            if (blackai != null && !game.checkCheckmate(game.board.turn)) {
+            if (blackai != null && !game.checkCheckmate(game.board.turn) && !runai[1]) {
+                runai[1] = true;
+                selected = null;
+                updateBoard();
+
+                SwingWorker<Integer, Integer> sw = new SwingWorker<Integer, Integer>() {
+                    protected Integer doInBackground() {
+                        int[] move= blackai.getMove(1, game.board.getBoardCopy(), game.board);
+                        if (blackai != null) game.board.move(move[0], move[1], move[2], move[3]);
+                        return 0;
+                    }
+                    protected void done() {
+                        runai[1] = false;
+                        updateBoard();
+                    }
+                };
+                sw.execute();
+
+                /*
                 SwingUtilities.invokeLater( new Runnable() {
                     public void run() {
                         int[] move= blackai.getMove(1, game.board.getBoardCopy(), game.board);
                         game.board.move(move[0], move[1], move[2], move[3]);
                         updateBoard();
-                    }});
+                    }});*/
             }
 
         }
