@@ -1,14 +1,11 @@
 package ui;
 
 import game.*;
+import ai.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
-import ai.AI;
-import ai.BasicAI;
-import ai.PruningAI;
-import ai.PruningAI2;
 import java.util.ArrayList;
 
 
@@ -61,11 +58,12 @@ public class GUI extends JFrame implements MouseListener {
                 return moves.get((int) (Math.random() * moves.size()));
             }};
 
+        int[] defaultGeneticParams = {1, 7, 4, 250, 50, 10, 5, 8, 1, 100, 1, 100, 2, 5, 1};
         black.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (blackai == null) {
                     black.setText("blackai");
-                    blackai = new PruningAI2();
+                    blackai = new GeneticAI(defaultGeneticParams);
                     selected = null;
                     updateBoard();
                 } else {
@@ -77,7 +75,7 @@ public class GUI extends JFrame implements MouseListener {
             public void actionPerformed(ActionEvent e) {
                 if (whiteai == null) {
                     white.setText("whiteai");
-                    whiteai = new PruningAI2();
+                    whiteai = new GeneticAI(defaultGeneticParams);
                     updateBoard();
                 } else {
                     whiteai = null;
@@ -208,8 +206,12 @@ public class GUI extends JFrame implements MouseListener {
                 updateBoard();
                 SwingWorker<Integer, Integer> sw = new SwingWorker<Integer, Integer>() {
                     protected Integer doInBackground() {
-                        int[] move= whiteai.getMove(0, game.board.getBoardCopy(), game.board);
-                        if (whiteai != null) game.board.move(move[0], move[1], move[2], move[3]);
+                        try {
+                            int[] move= whiteai.getMove(0, game.board.getBoardCopy(), game.board);
+                            if (whiteai != null) game.board.move(move[0], move[1], move[2], move[3]);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         return 0;
                     }
                     protected void done() {
@@ -238,8 +240,12 @@ public class GUI extends JFrame implements MouseListener {
 
                 SwingWorker<Integer, Integer> sw = new SwingWorker<Integer, Integer>() {
                     protected Integer doInBackground() {
-                        int[] move= blackai.getMove(1, game.board.getBoardCopy(), game.board);
-                        if (blackai != null) game.board.move(move[0], move[1], move[2], move[3]);
+                        try {
+                            int[] move= blackai.getMove(1, game.board.getBoardCopy(), game.board);
+                            if (blackai != null) game.board.move(move[0], move[1], move[2], move[3]);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         return 0;
                     }
                     protected void done() {

@@ -142,7 +142,6 @@ public class BasicAI implements AI {
         return bestscore;
     }
 
-    // Make this nonpublic later
     protected int evaluate(int c, Piece[][] pieces, Board board) {
         evals++;
         return getMaterial(c, pieces) + 7 * checkThreats(c, pieces, board) - 4 * checkThreats(1-c, pieces, board);

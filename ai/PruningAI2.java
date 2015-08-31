@@ -11,7 +11,7 @@ public class PruningAI2 extends PruningAI {
         recevals = new int[10];
         depth = 0;
         evals = 0;
-        int[] best = recurse2(10000, c, pieces, board, 1);
+        int[] best = recurse2(1000, c, pieces, board, 1);
         System.out.println("Best score found: "+best[5]);
         System.out.println("Move: "+Arrays.toString(best));
         System.out.println("Evaluations made: "+evals);
@@ -25,7 +25,8 @@ public class PruningAI2 extends PruningAI {
 
 
     protected int recurse3(int levels, int c, Piece[][] sim, Board board, int depth) {
-        return -recurse2(levels / 5, 1 - c, sim, board, depth + 1)[5];
+        if (Game.getMoves(1 - c, sim).size() > levels / 5) return directeval(c, sim, board, depth); 
+        else return -recurse2(levels / 5, 1 - c, sim, board, depth + 1)[5];
     }
 
     /*

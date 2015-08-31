@@ -41,6 +41,10 @@ public class PruningAI extends BasicAI {
             System.out.println("Levels remaining: "+levels);
         }
 
+        if (moves.size() == 0) return new int[6]; // Draw
+
+
+
 
         ArrayList<int[]> newmoves = new ArrayList<int[]>();
         for (int[] move : moves) {
@@ -84,7 +88,7 @@ public class PruningAI extends BasicAI {
         }
         System.out.println(Arrays.deepToString(Arrays.copyOf(movesarr, 5)));
         */
-        for (int i = 0; i < select; i++) {
+        for (int i = 0; i < Math.min(select, movesarr.length); i++) {
             int[] move = movesarr[i];
             Piece[][] sim = Board.copyBoard(pieces);
             board.simulate(Arrays.copyOf(move, 4), sim, promarr[move[4]]);
