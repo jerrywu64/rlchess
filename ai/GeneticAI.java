@@ -21,10 +21,12 @@ public class GeneticAI extends PruningAI2 {
      * 12. threatfunc denominator base
      * 13. threatfunc denominator exponent divisor
      * 14. threatfunc constant
+     * 15. score penalty to king moves
     */
 
     public GeneticAI(int[] p) {
         params = p;
+        kingpen = params[15];
     }
 
     protected int evaluate(int c, Piece[][] pieces, Board board) {

@@ -7,7 +7,9 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-
+import java.util.Scanner;
+import java.io.File;
+import java.util.Arrays;
 
 
 public class GUI extends JFrame implements MouseListener {
@@ -58,7 +60,17 @@ public class GUI extends JFrame implements MouseListener {
                 return moves.get((int) (Math.random() * moves.size()));
             }};
 
-        int[] defaultGeneticParams = {1, 7, 4, 250, 50, 10, 5, 8, 1, 100, 1, 100, 2, 5, 1};
+        int[] defaultGeneticParams = {1, 7, 4, 250, 50, 10, 5, 8, 1, 100, 1, 100, 2, 5, 1, 300};
+        try {
+            Scanner sc = new Scanner(new File("ai/geneticparams.txt"));
+            for (int i = 0; i < 15; i++) {
+                defaultGeneticParams[i] = sc.nextInt();
+            }
+            sc.close();
+        } catch (Exception e) {
+            System.out.println("Could not load GeneticAI from file. Reverting to default.");
+        }
+        System.out.println("Loaded GeneticAI with params: "+Arrays.toString(defaultGeneticParams));
         black.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (blackai == null) {

@@ -8,10 +8,11 @@ import game.*;
 public class PruningAI2 extends PruningAI {
 
     public int[] getMove(int c, Piece[][] pieces, Board board) {
+        select = 4;
         recevals = new int[10];
         depth = 0;
         evals = 0;
-        int[] best = recurse2(1000, c, pieces, board, 1);
+        int[] best = recurse2(10000, c, pieces, board, 1);
         System.out.println("Best score found: "+best[5]);
         System.out.println("Move: "+Arrays.toString(best));
         System.out.println("Evaluations made: "+evals);

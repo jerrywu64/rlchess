@@ -9,6 +9,7 @@ public class PruningAI extends BasicAI {
 
     protected int select = 5; // number of moves to select for review
     protected int[] recevals = new int[10];
+    protected int kingpen = 300; // Score penalty to king moves
 
 
     public int[] getMove(int c, Piece[][] pieces, Board board) {
@@ -41,6 +42,11 @@ public class PruningAI extends BasicAI {
             System.out.println("Levels remaining: "+levels);
         }
 
+        if (Game.findKing(c, pieces) == null) {
+            int[] out = new int[6];
+            out[5] = -1000000 + depth;
+            return out;
+        }
         if (moves.size() == 0) return new int[6]; // Draw
 
 
@@ -65,6 +71,7 @@ public class PruningAI extends BasicAI {
                 }
                 boolean promoted = (sim[move[2]][move[3]] != null && sim[move[2]][move[3]] != p);
                 int score = directeval(c, sim, board, depth);
+                if (p.getSymbol().equals("K")) score =- kingpen;
                 int[] aug = Arrays.copyOf(move, move.length + 2);
                 aug[move.length] = pr;
                 aug[move.length + 1] = score;
@@ -91,6 +98,7 @@ public class PruningAI extends BasicAI {
         for (int i = 0; i < Math.min(select, movesarr.length); i++) {
             int[] move = movesarr[i];
             Piece[][] sim = Board.copyBoard(pieces);
+            String s = sim[move[0]][move[1]].getSymbol();
             board.simulate(Arrays.copyOf(move, 4), sim, promarr[move[4]]);
             if (Game.findKing(1-c, sim) == null) {
                 if (Game.findKing(c, sim) != null) {
@@ -103,6 +111,7 @@ public class PruningAI extends BasicAI {
                 }
             }
             int minscore = recurse3(levels, c, sim, board, depth);
+            if (s.equals("K")) minscore -= kingpen;
             if (minscore >= best[5]) {
                 move[5] = minscore;
                 best = move;
