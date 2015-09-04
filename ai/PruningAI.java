@@ -71,7 +71,7 @@ public class PruningAI extends BasicAI {
                 }
                 boolean promoted = (sim[move[2]][move[3]] != null && sim[move[2]][move[3]] != p);
                 int score = directeval(c, sim, board, depth);
-                if (p.getSymbol().equals("K")) score =- kingpen;
+                if (p.getSymbol().equals("K")) score -= kingpen;
                 int[] aug = Arrays.copyOf(move, move.length + 2);
                 aug[move.length] = pr;
                 aug[move.length + 1] = score;
@@ -138,6 +138,7 @@ public class PruningAI extends BasicAI {
                 }
                 boolean promoted2 = (sim2[threat[2]][threat[3]] != null && sim2[threat[2]][threat[3]] != p2);
                 int score = recurse2(levels / 5 / threats.size(), c, sim2, board, depth + 1)[5];
+                if (p2.getSymbol().equals("K")) score += kingpen;
                 if (score <= minscore) minscore = score;
                 if (!promoted2) 
                     // we didn't actually promote, don't bother with
@@ -174,6 +175,8 @@ public class PruningAI extends BasicAI {
                 }
                 boolean promoted2 = (sim2[threat[2]][threat[3]] != null && sim2[threat[2]][threat[3]] != p2);
                 int score = evaluate(c, sim2, board, depth);
+                if (p2.getSymbol().equals("K")) score += kingpen;
+                if (AIUtils.isKingKillableRL(1-c, sim2)) score = 800000 - depth;
                 if (score <= minscore) minscore = score;
                 if (!promoted2) 
                     // we didn't actually promote, don't bother with
