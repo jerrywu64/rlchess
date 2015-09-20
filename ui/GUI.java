@@ -16,8 +16,10 @@ public class GUI extends JFrame implements MouseListener {
 
     private JButton black;
     private AI blackai = null;
+    private AI blackbookai = null; // save the AI so we don't lose caching
     private JButton white;
     private AI whiteai = null;
+    private AI whitebookai = null;
     private boolean[] runai = new boolean[2];
     private Square[][] board;
     private Game game; // unless we want to set this up as an instance
@@ -71,11 +73,14 @@ public class GUI extends JFrame implements MouseListener {
             System.out.println("Could not load GeneticAI from file. Reverting to default.");
         }
         System.out.println("Loaded GeneticAI with params: "+Arrays.toString(defaultGeneticParams));
+        blackbookai = new BookAI(true, 3);
+        whitebookai = new BookAI(true, 6);
+
         black.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (blackai == null) {
                     black.setText("blackai");
-                    blackai = new BookAI(true);
+                    blackai = blackbookai;
                     selected = null;
                     updateBoard();
                 } else {
@@ -87,7 +92,7 @@ public class GUI extends JFrame implements MouseListener {
             public void actionPerformed(ActionEvent e) {
                 if (whiteai == null) {
                     white.setText("whiteai");
-                    whiteai = new BookAI(true);
+                    whiteai = whitebookai;
                     updateBoard();
                 } else {
                     whiteai = null;

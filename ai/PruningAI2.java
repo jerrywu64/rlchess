@@ -26,7 +26,6 @@ public class PruningAI2 extends PruningAI {
 
     // Returns best instead of truncating it. For usage by BookAI.
     public int[] getMove2(int c, Piece[][] pieces, Board board) {
-        select = 4;
         recevals = new int[10];
         depth = 0;
         evals = 0;

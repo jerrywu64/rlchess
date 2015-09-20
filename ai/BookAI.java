@@ -54,6 +54,10 @@ public class BookAI extends GeneticAI {
         this();
         updatingTree = update;
     }
+    public BookAI(boolean update, int sel) {
+        this(update);
+        select = sel;
+    }
 
     // Save the gametree after each move and cache, but otherwise proceed as usual.
     public int[] getMove(int c, Piece[][] pieces, Board board) {
