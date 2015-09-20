@@ -36,11 +36,6 @@ public class GeneticEvolution {
 
     public static void main(String[] args) throws FileNotFoundException {
         params = new int[16];
-        Scanner sc = new Scanner(new File("ai/geneticparams.txt"));
-        for (int i = 0; i < 16; i++) {
-            params[i] = sc.nextInt();
-        }
-        sc.close();
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 if (!done) {
@@ -60,11 +55,11 @@ public class GeneticEvolution {
                 }
             }
         });
-        for (cycles = 0; cycles < 20; cycles++) {
+        for (cycles = 0; cycles < 1000; cycles++) {
             System.out.println("=====================");
             System.out.println("Starting new cycle: "+Arrays.toString(params));
             System.out.println("=====================");
-            params = evolve(params, 5, (20 - cycles) / 5. + 1);
+            params = evolve(params, 5, 7  - (int) (Math.random() * 6));
         }
         System.out.println("Final winner: "+Arrays.toString(params));
         System.out.println("Outputting to file.");
@@ -74,10 +69,28 @@ public class GeneticEvolution {
         }
         p.close();
         done = true;
-
-
-
     }
+
+    public static int[] getGeneticParams() {
+        int[] params = new int[16];
+        try {
+            Scanner sc = new Scanner(new File("ai/geneticparams.txt"));
+            for (int i = 0; i < 16; i++) {
+                params[i] = sc.nextInt();
+            }
+            sc.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("Error: couldn't read geneticparams.txt!");
+            System.out.println("Initializing default parameters.");
+            int[] defaultparams = {1, 7, 4, 250, 50, 10, 5, 8, 1, 100, 1, 100, 2, 5, 1, 300};
+            params = defaultparams;
+        }
+        return params;
+    }
+
+
+
+
 
     // Generates num GeneticAIs off of the seed parameters, 
     // randomly multiplying some parameters by something in the range
@@ -91,7 +104,7 @@ public class GeneticEvolution {
         for (int i = 1; i < num; i++) {
             int[] param = new int[seed.length];
             for (int j = 0; j < seed.length; j++) {
-                if (Math.random() < 0.4) {
+                if (Math.random() < 0.6) {
                     if (Math.random() < 0.5) {
                         param[j] = (int) (seed[j] * (Math.random() * (vol - 1) + 1));
                     } else {

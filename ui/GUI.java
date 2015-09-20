@@ -75,7 +75,7 @@ public class GUI extends JFrame implements MouseListener {
             public void actionPerformed(ActionEvent e) {
                 if (blackai == null) {
                     black.setText("blackai");
-                    blackai = new GeneticAI(defaultGeneticParams);
+                    blackai = new BookAI(true);
                     selected = null;
                     updateBoard();
                 } else {
@@ -87,7 +87,7 @@ public class GUI extends JFrame implements MouseListener {
             public void actionPerformed(ActionEvent e) {
                 if (whiteai == null) {
                     white.setText("whiteai");
-                    whiteai = new GeneticAI(defaultGeneticParams);
+                    whiteai = new BookAI(true);
                     updateBoard();
                 } else {
                     whiteai = null;
@@ -208,7 +208,12 @@ public class GUI extends JFrame implements MouseListener {
                 board[i][j].setText(getIcon(game.board.getBoardCopy()[i][j]));
             }
         }
-        if (game.checkCheckmate(game.board.turn)) JOptionPane.showMessageDialog(this, "Checkmate");
+        if (game.checkCheckmate(game.board.turn)) // JOptionPane.showMessageDialog(this, "Checkmate");
+            {
+                System.out.println("Checkmate! Resetting board.");
+                game.board.resetBoard();
+                updateBoard();
+            }
         if (game.board.turn == 0) {
             white.setBackground(new Color(255, 255, 128));
             black.setBackground(Color.white);

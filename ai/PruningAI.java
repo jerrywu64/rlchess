@@ -188,6 +188,53 @@ public class PruningAI extends BasicAI {
         return minscore;
     }
 
+    // Like directeval, but returns the enemy's best move instead, though the score is passed in the 6th entry
+    // of the array (though negated). For use by BookAI.
+    protected int[] directeval2(int c, Piece[][] sim, Board board, int depth) {
+        int minscore = Integer.MAX_VALUE;
+        int[] enemymove = null;
+        ArrayList<int[]> threats = Game.getMoves(1 - c, sim);
+        for (int[] threat : threats) {
+            for (String s2 : promarr) {
+                Piece[][] sim2 = Board.copyBoard(sim);
+                Piece p2 = sim2[threat[0]][threat[1]];
+                board.simulate(threat, sim2, s2);
+                if (Game.findKing(c, sim2) == null) {
+                    if (Game.findKing(1-c, sim2) != null) {
+                        minscore = -1000000 + depth; // loss
+                        enemymove = Arrays.copyOf(threat, 6);
+                        enemymove[5] = -minscore;
+                    } else {
+                        if (minscore > 0) {
+                            minscore = 0; // draw
+                            enemymove = Arrays.copyOf(threat, 6);
+                            enemymove[4] = 1000; // for BookAI
+                            enemymove[5] = -minscore;
+                        }
+                        break;
+                    }
+                }
+                boolean promoted2 = (sim2[threat[2]][threat[3]] != null && sim2[threat[2]][threat[3]] != p2);
+                int score = evaluate(c, sim2, board, depth);
+                if (p2.getSymbol().equals("K")) score += kingpen;
+                if (AIUtils.isKingKillableRL(1-c, sim2)) score = 800000 - depth;
+                if (score <= minscore) {
+                    minscore = score;
+                    enemymove = Arrays.copyOf(threat, 6);
+                    enemymove[5] = -minscore;
+                }
+                if (!promoted2) 
+                    // we didn't actually promote, don't bother with
+                    // the other possibilities
+                    break;
+                // else System.out.println("Tested enemy promotion: "+s2);
+            }
+        }
+        return enemymove;
+    }
+
+
+
 
 }
 

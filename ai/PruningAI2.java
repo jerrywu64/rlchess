@@ -24,6 +24,24 @@ public class PruningAI2 extends PruningAI {
 
     }
 
+    // Returns best instead of truncating it. For usage by BookAI.
+    public int[] getMove2(int c, Piece[][] pieces, Board board) {
+        select = 4;
+        recevals = new int[10];
+        depth = 0;
+        evals = 0;
+        int[] best = recurse2(10000, c, pieces, board, 1);
+        System.out.println("Best score found: "+best[5]);
+        System.out.println("Move: "+Arrays.toString(best));
+        System.out.println("Evaluations made: "+evals);
+        System.out.println("Recurses: "+Arrays.toString(recevals));
+
+        return best;
+    }
+
+
+
+
 
     protected int recurse3(int levels, int c, Piece[][] sim, Board board, int depth) {
         if (Game.getMoves(1 - c, sim).size() > levels / 5) return directeval(c, sim, board, depth); 
