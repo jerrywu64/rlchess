@@ -44,7 +44,7 @@ public class PruningAI extends BasicAI {
 
         if (Game.findKing(c, pieces) == null) {
             int[] out = new int[6];
-            out[5] = -1000000 + depth;
+            out[5] = -1000000 + depth * 1000;
             return out;
         }
         if (moves.size() == 0) return new int[6]; // Draw
@@ -62,7 +62,7 @@ public class PruningAI extends BasicAI {
                 if (Game.findKing(1-c, sim) == null) {
                     if (Game.findKing(c, sim) != null) {
                         int[] out = Arrays.copyOf(move, 6);
-                        out[5] = 1000000 - depth;
+                        out[5] = 1000000 - depth * 1000;
                         return out;// win
                     } else {
                         newmoves.add(Arrays.copyOf(move, move.length + 2)); // draw, score = 0
@@ -103,7 +103,7 @@ public class PruningAI extends BasicAI {
             if (Game.findKing(1-c, sim) == null) {
                 if (Game.findKing(c, sim) != null) {
                     int[] out = Arrays.copyOf(move, 6);
-                    out[5] = 1000000 - depth;
+                    out[5] = 1000000 - depth * 1000;
                     return out;// win
                 } else {
                     if (best[5] < 0) best = move;  // draw, score = 0
@@ -130,7 +130,7 @@ public class PruningAI extends BasicAI {
                 Piece p2 = sim2[threat[0]][threat[1]];
                 board.simulate(threat, sim2, s2);
                 if (Game.findKing(c, sim2) == null) {
-                    if (Game.findKing(1-c, sim2) != null) minscore = -1000000 + depth; // loss
+                    if (Game.findKing(1-c, sim2) != null) minscore = -1000000 + depth * 1000; // loss
                     else {
                         if (minscore > 0) minscore = 0; // draw
                         break;
@@ -167,7 +167,7 @@ public class PruningAI extends BasicAI {
                 Piece p2 = sim2[threat[0]][threat[1]];
                 board.simulate(threat, sim2, s2);
                 if (Game.findKing(c, sim2) == null) {
-                    if (Game.findKing(1-c, sim2) != null) minscore = -1000000 + depth; // loss
+                    if (Game.findKing(1-c, sim2) != null) minscore = -1000000 + depth * 1000; // loss
                     else {
                         if (minscore > 0) minscore = 0; // draw
                         break;
@@ -176,7 +176,7 @@ public class PruningAI extends BasicAI {
                 boolean promoted2 = (sim2[threat[2]][threat[3]] != null && sim2[threat[2]][threat[3]] != p2);
                 int score = evaluate(c, sim2, board, depth);
                 if (p2.getSymbol().equals("K")) score += kingpen;
-                if (AIUtils.isKingKillableRL(1-c, sim2)) score = 800000 - depth;
+                if (AIUtils.isKingKillableRL(1-c, sim2)) score = 800000 - depth * 1000;
                 if (score <= minscore) minscore = score;
                 if (!promoted2) 
                     // we didn't actually promote, don't bother with
@@ -201,14 +201,14 @@ public class PruningAI extends BasicAI {
                 board.simulate(threat, sim2, s2);
                 if (Game.findKing(c, sim2) == null) {
                     if (Game.findKing(1-c, sim2) != null) {
-                        minscore = -1000000 + depth; // loss
+                        minscore = -1000000 + depth * 1000; // loss
                         enemymove = Arrays.copyOf(threat, 6);
                         enemymove[5] = -minscore;
                     } else {
                         if (minscore > 0) {
                             minscore = 0; // draw
                             enemymove = Arrays.copyOf(threat, 6);
-                            enemymove[4] = 1000; // for BookAI
+                            enemymove[4] = 990; // for BookAI
                             enemymove[5] = -minscore;
                         }
                         break;
@@ -217,7 +217,7 @@ public class PruningAI extends BasicAI {
                 boolean promoted2 = (sim2[threat[2]][threat[3]] != null && sim2[threat[2]][threat[3]] != p2);
                 int score = evaluate(c, sim2, board, depth);
                 if (p2.getSymbol().equals("K")) score += kingpen;
-                if (AIUtils.isKingKillableRL(1-c, sim2)) score = 800000 - depth;
+                if (AIUtils.isKingKillableRL(1-c, sim2)) score = 800000 - depth * 1000;
                 if (score <= minscore) {
                     minscore = score;
                     enemymove = Arrays.copyOf(threat, 6);

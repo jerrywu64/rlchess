@@ -64,6 +64,11 @@ public class BookAI extends GeneticAI {
         int[] cachepull = cache.get(convToString(c, pieces));
         if (cachepull != null && Math.random() * 1000 < cachepull[4]) {
             System.out.println("Returning cached move...");
+            Piece[][] sim = Board.copyBoard(pieces);
+            board.simulate(cachepull, sim, "Q");
+            directeval(c, sim, board, 1); // Should help build the game tree a bit, though unnecessary for 
+                                          // computing the output.
+            directeval(1-c, pieces, board, 0);
             return Arrays.copyOf(cache.get(convToString(c, pieces)), 4);
         }
         if (retrieve(c, pieces) != null && retrieve(c, pieces)[0] < 0) {
@@ -71,10 +76,11 @@ public class BookAI extends GeneticAI {
             for (String key : cache.keySet()) {
                 cache.get(key)[4] = (int) (cache.get(key)[4] * 0.99);
             }
+            directeval(1-c, pieces, board, 0); // Again, for building game tree
             return Game.getMoves(c, pieces).get(0);
         }
         int[] out = getMove2(c, pieces, board);
-        out[4] = 1000; // Overriding promotion item with cache-use probability.
+        out[4] = 990; // Overriding promotion item with cache-use probability.
         saveGameTree();
         if (out[5] < -600000) {
             // lost, so flush cache
@@ -101,6 +107,7 @@ public class BookAI extends GeneticAI {
     // which allows us to expand the game tree.
     protected int directeval(int c, Piece[][] sim, Board board, int depth) {
         int[] out = super.directeval2(c, sim, board, depth);
+        if (out == null) return Integer.MAX_VALUE; // keeping with original behavior, says enemy is out of moves
         // Note that when we call directeval for c, that's after c just moved.
         if (-out[5] > 690000) updateTree(1-c, sim, LOSE); // Win!, so loss for the other player
         if (-out[5] < -690000) {
